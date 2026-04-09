@@ -20,10 +20,9 @@
             </div>
             <div class="hidden md:flex space-x-6">
                 <a href="#home" class="text-gray-700 hover:text-blue-600 transition">Home</a>
-                <a href="#symptom-check" class="text-gray-700 hover:text-blue-600 transition">Symptom Check</a>
-                <a href="#wellness" class="text-gray-700 hover:text-blue-600 transition">Wellness</a>
-                <a href="#mental-health" class="text-gray-700 hover:text-blue-600 transition">Mental Health</a>
-                <button id="loginBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Login</button>
+                <a href="#features" class="text-gray-700 hover:text-blue-600 transition">Features</a>
+                <a href="#about" class="text-gray-700 hover:text-blue-600 transition">About</a>
+                <button id="loginBtn" onclick="window.location.href='/login'" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Get Started</button>
             </div>
         </div>
     </nav>
@@ -35,8 +34,8 @@
                 <h1 class="text-5xl font-bold text-gray-900 mb-4">Your AI Health Companion</h1>
                 <p class="text-xl text-gray-600 mb-8">Get personalized health insights, wellness recommendations, and mental health support powered by AI.</p>
                 <div class="flex space-x-4">
-                    <button onclick="scrollToSection('symptom-check')" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Check Symptoms</button>
-                    <button onclick="scrollToSection('wellness')" class="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">Learn More</button>
+                    <button onclick="window.location.href='/login'" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Get Started</button>
+                    <button onclick="scrollToSection('features')" class="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">Learn More</button>
                 </div>
             </div>
             <div class="bg-white rounded-lg shadow-lg p-8">
@@ -64,206 +63,105 @@
         </div>
     </section>
 
-    <!-- Symptom Check Section -->
-    <section id="symptom-check" class="bg-white py-20 px-4">
+    <!-- Features Section -->
+    <section id="features" class="bg-white py-20 px-4">
         <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">Quick Symptom Checker</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-8">
-                    <h3 class="text-2xl font-semibold text-gray-900 mb-6">How it works</h3>
-                    <ol class="space-y-4 text-gray-700">
-                        <li class="flex space-x-3">
-                            <span class="text-blue-600 font-bold">1.</span>
-                            <p>Select your symptoms from the categories</p>
-                        </li>
-                        <li class="flex space-x-3">
-                            <span class="text-blue-600 font-bold">2.</span>
-                            <p>Provide your age and medical history</p>
-                        </li>
-                        <li class="flex space-x-3">
-                            <span class="text-blue-600 font-bold">3.</span>
-                            <p>Get AI-powered disease prediction</p>
-                        </li>
-                        <li class="flex space-x-3">
-                            <span class="text-blue-600 font-bold">4.</span>
-                            <p>Receive actionable recommendations</p>
-                        </li>
-                    </ol>
+            <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">Our Features</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 text-center">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">🔍</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Symptom Check</h3>
+                    <p class="text-gray-700">AI-powered symptom analysis to help you understand potential health concerns.</p>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-lg p-8">
-                    <form id="symptomForm" class="space-y-6">
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Select Symptoms</label>
-                            <div id="symptomCategories" class="space-y-3">
-                                <!-- Categories will be loaded here -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 text-center">
+                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">💚</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Wellness Check</h3>
+                    <p class="text-gray-700">Personalized wellness recommendations based on your lifestyle and health data.</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 text-center">
+                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">🧠</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Mental Health</h3>
+                    <p class="text-gray-700">AI-powered mental health support and coping strategies.</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-6 text-center">
+                    <div class="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">📊</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Health Screening</h3>
+                    <p class="text-gray-700">Comprehensive health screening to assess your overall well-being.</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-lg p-6 text-center">
+                    <div class="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">📈</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Health Tracker</h3>
+                    <p class="text-gray-700">Track your vital signs, metrics, and health trends over time.</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-6 text-center">
+                    <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">💬</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">AI Chat</h3>
+                    <p class="text-gray-700">Chat with our AI assistant for instant health advice and support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-6">About MindEase</h2>
+                    <p class="text-xl text-gray-600 mb-6">MindEase is your AI-powered health companion, designed to provide personalized health insights, wellness recommendations, and mental health support.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-blue-600">✓</span>
                             </div>
+                            <p class="text-gray-700">Advanced AI technology for accurate health analysis</p>
                         </div>
-
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Age</label>
-                            <input type="number" id="age" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter your age">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <span class="text-green-600">✓</span>
+                            </div>
+                            <p class="text-gray-700">Comprehensive wellness tracking and monitoring</p>
                         </div>
-
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Check Symptoms</button>
-                    </form>
-
-                    <div id="symptomResults" class="mt-6 hidden">
-                        <div id="resultsContent"></div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                <span class="text-purple-600">✓</span>
+                            </div>
+                            <p class="text-gray-700">24/7 mental health support and resources</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                                <span class="text-orange-600">✓</span>
+                            </div>
+                            <p class="text-gray-700">Privacy-focused with secure data handling</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Wellness Section -->
-    <section id="wellness" class="py-20 px-4">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">Wellness Assessment</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Wellness Form -->
-                <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-8">
-                    <form id="wellnessForm" class="space-y-6">
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Current Symptoms</label>
-                            <textarea id="wellnessSymptoms" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="3" placeholder="Describe any symptoms you're experiencing..."></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Health History</label>
-                            <textarea id="healthHistory" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="3" placeholder="Any previous health conditions or surgeries..."></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Lifestyle</label>
-                            <textarea id="lifestyle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="3" placeholder="Exercise frequency, diet, sleep, etc..."></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">Get Wellness Recommendations</button>
-                    </form>
-
-                    <div id="wellnessResults" class="mt-6 hidden">
-                        <div id="wellnessContent"></div>
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-8">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Why Choose MindEase?</h3>
+                    <div class="space-y-4 text-gray-700">
+                        <p>Our AI algorithms are trained on extensive medical knowledge and continuously updated with the latest health research.</p>
+                        <p>We prioritize your privacy and security, ensuring all your health data remains confidential and secure.</p>
+                        <p>Get personalized recommendations tailored to your unique health profile and lifestyle.</p>
+                        <p>Access professional-grade health tools and insights from the comfort of your home.</p>
                     </div>
-                </div>
-
-                <!-- Wellness Tracking -->
-                <div class="bg-white rounded-lg shadow-lg p-8">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Daily Log</h3>
-                    <form id="wellnessLogForm" class="space-y-4">
-                        <div>
-                            <label class="block text-gray-700 text-sm font-semibold mb-1">Mood</label>
-                            <select id="mood" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <option value="">Select mood</option>
-                                <option value="great">Great</option>
-                                <option value="good">Good</option>
-                                <option value="okay">Okay</option>
-                                <option value="bad">Bad</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 text-sm font-semibold mb-1">Sleep (hours)</label>
-                            <input type="number" id="sleepHours" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" step="0.5" placeholder="0">
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 text-sm font-semibold mb-1">Exercise (minutes)</label>
-                            <input type="number" id="exerciseMinutes" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="0">
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 text-sm font-semibold mb-1">Energy Level (1-10)</label>
-                            <input type="range" id="energyLevel" class="w-full" min="1" max="10" value="5">
-                            <span id="energyDisplay" class="text-sm text-gray-600">5</span>
-                        </div>
-
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">Save Log</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Mental Health Section -->
-    <section id="mental-health" class="bg-white py-20 px-4">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">Mental Health Support</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-8">
-                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Your Well-being Matters</h3>
-                    <p class="text-gray-700 mb-4">Take a moment to reflect on your mental health. Share your feelings, stressors, and current coping methods to receive personalized support and strategies.</p>
-                    <div class="space-y-2 text-sm text-gray-700">
-                        <p>✓ Get evidence-based coping strategies</p>
-                        <p>✓ Learn mindfulness techniques</p>
-                        <p>✓ Receive professional guidance</p>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-lg p-8">
-                    <form id="mentalHealthForm" class="space-y-6">
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Current Mood</label>
-                            <textarea id="moodDescription" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="2" placeholder="How are you feeling right now?"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">What's Stressing You?</label>
-                            <textarea id="stressors" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="2" placeholder="Describe your main stressors..."></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Current Coping Methods</label>
-                            <textarea id="copingMethods" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="2" placeholder="How do you currently manage stress?"></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">Get Support</button>
-                    </form>
-
-                    <div id="mentalHealthResults" class="mt-6 hidden">
-                        <div id="mentalHealthContent"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Dashboard Section (logged in users) -->
-    <section id="dashboard" class="bg-gray-50 py-20 px-4 hidden">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl font-bold text-gray-900 mb-8">Your Dashboard</h2>
-            
-            <div class="grid md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-600 text-sm font-semibold">Total Assessments</h3>
-                    <p id="totalAssessments" class="text-3xl font-bold text-blue-600">0</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-600 text-sm font-semibold">Wellness Logs</h3>
-                    <p id="totalLogs" class="text-3xl font-bold text-green-600">0</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-600 text-sm font-semibold">Health Metrics</h3>
-                    <p id="totalMetrics" class="text-3xl font-bold text-purple-600">0</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-gray-600 text-sm font-semibold">Last Check</h3>
-                    <p id="lastCheck" class="text-lg font-semibold text-gray-700">--</p>
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Assessments</h3>
-                    <div id="recentAssessments" class="space-y-2">
-                        <!-- Content loaded dynamically -->
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Wellness Logs</h3>
-                    <div id="recentLogs" class="space-y-2">
-                        <!-- Content loaded dynamically -->
-                    </div>
+                    <button onclick="window.location.href='/login'" class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Start Your Health Journey</button>
                 </div>
             </div>
         </div>
@@ -298,56 +196,6 @@
                 <p>&copy; 2024 MindEase. All rights reserved. Disclaimer: This app is for informational purposes only, not medical advice.</p>
             </div>
         </div>
-    </footer>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Login</h2>
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Username</label>
-                    <input type="text" id="loginUsername" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
-                    <input type="password" id="loginPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Login</button>
-            </form>
-            <p class="text-center text-gray-600 mt-4">Don't have an account? <button onclick="showRegisterModal()" class="text-blue-600 font-semibold">Register</button></p>
-            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">✕</button>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Register</h2>
-            <form id="registerForm" class="space-y-4">
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Username</label>
-                    <input type="text" id="regUsername" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Email</label>
-                    <input type="email" id="regEmail" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
-                    <input type="password" id="regPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Age</label>
-                    <input type="number" id="regAge" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
-                </div>
-                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition">Register</button>
-            </form>
-            <p class="text-center text-gray-600 mt-4">Already have an account? <button onclick="showLoginModal()" class="text-blue-600 font-semibold">Login</button></p>
-            <button onclick="closeRegisterModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">✕</button>
-        </div>
-    </div>
-
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

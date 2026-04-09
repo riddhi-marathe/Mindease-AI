@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - MindEase{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <i data-lucide="clipboard-list" class="w-6 h-6 text-blue-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Assessments</p>
+                    <p id="totalAssessments" class="text-2xl font-bold text-gray-900">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-green-100 rounded-lg">
+                    <i data-lucide="heart" class="w-6 h-6 text-green-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Wellness Logs</p>
+                    <p id="totalLogs" class="text-2xl font-bold text-gray-900">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-purple-100 rounded-lg">
+                    <i data-lucide="activity" class="w-6 h-6 text-purple-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Health Metrics</p>
+                    <p id="totalMetrics" class="text-2xl font-bold text-gray-900">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-indigo-100 rounded-lg">
+                    <i data-lucide="calendar" class="w-6 h-6 text-indigo-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Last Check</p>
+                    <p id="lastCheck" class="text-lg font-semibold text-gray-900">--</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i data-lucide="clipboard-list" class="w-5 h-5 mr-2 text-blue-600"></i>
+                Recent Assessments
+            </h3>
+            <div id="recentAssessments" class="space-y-3">
+                <p class="text-gray-500 text-sm">No assessments yet</p>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i data-lucide="heart" class="w-5 h-5 mr-2 text-green-600"></i>
+                Recent Wellness Logs
+            </h3>
+            <div id="recentLogs" class="space-y-3">
+                <p class="text-gray-500 text-sm">No logs yet</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="{{ url_for('main.symptom_check_page') }}" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+                <i data-lucide="stethoscope" class="w-8 h-8 text-blue-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">Symptom Check</span>
+            </a>
+            <a href="{{ url_for('main.wellness_check_page') }}" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+                <i data-lucide="heart" class="w-8 h-8 text-green-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">Wellness Check</span>
+            </a>
+            <a href="{{ url_for('main.mental_check_page') }}" class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+                <i data-lucide="brain" class="w-8 h-8 text-purple-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">Mental Check</span>
+            </a>
+            <a href="{{ url_for('main.chat_page') }}" class="flex flex-col items-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition">
+                <i data-lucide="message-circle" class="w-8 h-8 text-indigo-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">AI Chat</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load dashboard data
+    loadDashboardData();
+
+    function loadDashboardData() {
+        // Load stats
+        fetch('/api/assessments')
+            .then(response => response.json())
+            .then(data => {
+                if (data.assessments) {
+                    document.getElementById('totalAssessments').textContent = data.assessments.length;
+                    displayRecentAssessments(data.assessments.slice(0, 5));
+                }
+            })
+            .catch(error => console.error('Error loading assessments:', error));
+
+        fetch('/api/wellness/logs')
+            .then(response => response.json())
+            .then(data => {
+                if (data.logs) {
+                    document.getElementById('totalLogs').textContent = data.logs.length;
+                    displayRecentLogs(data.logs.slice(0, 5));
+                }
+            })
+            .catch(error => console.error('Error loading logs:', error));
+
+        fetch('/api/health/metrics')
+            .then(response => response.json())
+            .then(data => {
+                if (data.metrics) {
+                    document.getElementById('totalMetrics').textContent = data.metrics.length;
+                }
+            })
+            .catch(error => console.error('Error loading metrics:', error));
+    }
+
+    function displayRecentAssessments(assessments) {
+        const container = document.getElementById('recentAssessments');
+        if (assessments.length === 0) return;
+
+        container.innerHTML = assessments.map(assessment => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                    <p class="text-sm font-medium text-gray-900">${assessment.prediction || 'Assessment'}</p>
+                    <p class="text-xs text-gray-500">${new Date(assessment.created_at).toLocaleDateString()}</p>
+                </div>
+                <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">${assessment.confidence || 'N/A'}%</span>
+            </div>
+        `).join('');
+    }
+
+    function displayRecentLogs(logs) {
+        const container = document.getElementById('recentLogs');
+        if (logs.length === 0) return;
+
+        container.innerHTML = logs.map(log => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                    <p class="text-sm font-medium text-gray-900">Mood: ${log.mood || 'N/A'}</p>
+                    <p class="text-xs text-gray-500">${new Date(log.created_at).toLocaleDateString()}</p>
+                </div>
+                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">${log.energy_level || 'N/A'}/10</span>
+            </div>
+        `).join('');
+    }
+</script>
+{% endblock %}

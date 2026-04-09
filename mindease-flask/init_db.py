@@ -7,6 +7,7 @@ Run this script to initialize the database with sample data
 import os
 import sys
 from dotenv import load_dotenv
+from werkzeug.security import generate_password_hash
 
 # Load environment variables
 load_dotenv()
@@ -38,7 +39,7 @@ def init_database():
                 sample_user = User(
                     username='demo',
                     email='demo@mindease.ai',
-                    password_hash='demo123',  # In production, use proper hashing
+                    password_hash=generate_password_hash('demo123'),
                     age=30,
                     gender='Male'
                 )

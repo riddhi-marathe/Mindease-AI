@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Mental Health Check - MindEase{% endblock %}
+{% block page_title %}Mental Health Check{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Info Section -->
+    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
+        <div class="flex items-start space-x-4">
+            <i data-lucide="brain" class="w-6 h-6 text-purple-600 mt-1"></i>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Mental Health Assessment</h3>
+                <p class="text-sm text-gray-700">Your mental well-being matters. Share your feelings and get personalized support and coping strategies powered by AI.</p>
+                <p class="text-xs text-purple-600 mt-2">* All information is kept confidential and secure</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mental Health Assessment Form -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="heart" class="w-6 h-6 mr-2 text-purple-600"></i>
+            Mental Health Assessment
+        </h3>
+
+        <form id="mentalHealthForm" class="space-y-6">
+            <!-- Current Mood -->
+            <div>
+                <label for="moodDescription" class="block text-sm font-medium text-gray-700 mb-2">How are you feeling right now?</label>
+                <textarea id="moodDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your current emotional state, mood, or feelings..."></textarea>
+            </div>
+
+            <!-- Stressors -->
+            <div>
+                <label for="stressors" class="block text-sm font-medium text-gray-700 mb-2">What's causing you stress? (Optional)</label>
+                <textarea id="stressors" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Work, relationships, health concerns, financial issues, etc..."></textarea>
+            </div>
+
+            <!-- Coping Methods -->
+            <div>
+                <label for="copingMethods" class="block text-sm font-medium text-gray-700 mb-2">How do you currently cope with stress?</label>
+                <textarea id="copingMethods" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Exercise, meditation, talking to friends, hobbies, etc..."></textarea>
+            </div>
+
+            <!-- Recent Changes -->
+            <div>
+                <label for="recentChanges" class="block text-sm font-medium text-gray-700 mb-2">Any recent changes in your life? (Optional)</label>
+                <textarea id="recentChanges" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Job changes, relationship changes, health issues, etc..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center">
+                <i data-lucide="sparkles" class="w-5 h-5 mr-2"></i>
+                Get Mental Health Support
+            </button>
+        </form>
+
+        <!-- Results Section -->
+        <div id="mentalHealthResults" class="mt-6 hidden">
+            <div class="border-t pt-6">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Your Mental Health Support Plan</h4>
+                <div id="mentalHealthContent" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Mood Tracker -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="smile" class="w-6 h-6 mr-2 text-purple-600"></i>
+            Quick Mood Check-in
+        </h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <button onclick="quickMoodCheck('great')" class="p-4 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300 transition flex flex-col items-center">
+                <i data-lucide="smile" class="w-8 h-8 text-green-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">Great</span>
+            </button>
+            <button onclick="quickMoodCheck('good')" class="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition flex flex-col items-center">
+                <i data-lucide="meh" class="w-8 h-8 text-blue-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">Good</span>
+            </button>
+            <button onclick="quickMoodCheck('okay')" class="p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg hover:bg-yellow-100 hover:border-yellow-300 transition flex flex-col items-center">
+                <i data-lucide="frown" class="w-8 h-8 text-yellow-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">Okay</span>
+            </button>
+            <button onclick="quickMoodCheck('struggling')" class="p-4 bg-red-50 border-2 border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition flex flex-col items-center">
+                <i data-lucide="frown" class="w-8 h-8 text-red-600 mb-2"></i>
+                <span class="text-sm font-medium text-gray-900">Struggling</span>
+            </button>
+        </div>
+
+        <div id="moodCheckResult" class="hidden p-4 bg-purple-50 border border-purple-200 rounded-lg">
+            <p class="text-purple-800 text-sm">Mood check-in saved! Remember to take care of yourself.</p>
+        </div>
+    </div>
+
+    <!-- Resources Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="book-open" class="w-6 h-6 mr-2 text-purple-600"></i>
+            Mental Health Resources
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 border border-gray-200 rounded-lg">
+                <h4 class="font-semibold text-gray-900 mb-2">Crisis Support</h4>
+                <p class="text-sm text-gray-600 mb-3">If you're in crisis or having thoughts of self-harm:</p>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Emergency:</strong> Call 911</p>
+                    <p><strong>National Suicide Prevention Lifeline:</strong> 988</p>
+                    <p><strong>Crisis Text Line:</strong> Text HOME to 741741</p>
+                </div>
+            </div>
+
+            <div class="p-4 border border-gray-200 rounded-lg">
+                <h4 class="font-semibold text-gray-900 mb-2">Daily Wellness Tips</h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• Practice deep breathing exercises</li>
+                    <li>• Take short walks in nature</li>
+                    <li>• Connect with loved ones</li>
+                    <li>• Maintain a consistent sleep schedule</li>
+                    <li>• Try mindfulness meditation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle mental health form submission
+    document.getElementById('mentalHealthForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        mental_health_support();
+    });
+
+    function mental_health_support() {
+        const moodDescription = document.getElementById('moodDescription').value;
+        const stressors = document.getElementById('stressors').value;
+        const copingMethods = document.getElementById('copingMethods').value;
+        const recentChanges = document.getElementById('recentChanges').value;
+
+        if (!moodDescription.trim()) {
+            alert('Please describe how you are feeling.');
+            return;
+        }
+
+        const resultsDiv = document.getElementById('mentalHealthResults');
+        const contentDiv = document.getElementById('mentalHealthContent');
+
+        // Show loading
+        resultsDiv.classList.remove('hidden');
+        contentDiv.innerHTML = '<div class="flex items-center justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>';
+
+        fetch('/api/health/mental-health-support', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                mood_description: moodDescription,
+                stressors: stressors,
+                coping_methods: copingMethods,
+                recent_changes: recentChanges
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                contentDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4"><p class="text-red-800">${data.error}</p></div>`;
+            } else {
+                displayMentalHealthResults(data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            contentDiv.innerHTML = '<div class="bg-red-50 border border-red-200 rounded-lg p-4"><p class="text-red-800">An error occurred. Please try again.</p></div>';
+        });
+    }
+
+    function displayMentalHealthResults(data) {
+        const contentDiv = document.getElementById('mentalHealthContent');
+
+        let html = '';
+
+        if (data.support_plan && data.support_plan.length > 0) {
+            html += `
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-purple-900 mb-2 flex items-center">
+                        <i data-lucide="heart" class="w-5 h-5 mr-2"></i>
+                        Your Support Plan
+                    </h5>
+                    <ul class="list-disc list-inside text-purple-800 space-y-1">
+                        ${data.support_plan.map(plan => `<li>${plan}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (data.coping_strategies && data.coping_strategies.length > 0) {
+            html += `
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-blue-900 mb-2 flex items-center">
+                        <i data-lucide="shield" class="w-5 h-5 mr-2"></i>
+                        Coping Strategies
+                    </h5>
+                    <ul class="list-disc list-inside text-blue-800 space-y-1">
+                        ${data.coping_strategies.map(strategy => `<li>${strategy}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (data.mindfulness_exercises && data.mindfulness_exercises.length > 0) {
+            html += `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-green-900 mb-2 flex items-center">
+                        <i data-lucide="wind" class="w-5 h-5 mr-2"></i>
+                        Mindfulness Exercises
+                    </h5>
+                    <ul class="list-disc list-inside text-green-800 space-y-1">
+                        ${data.mindfulness_exercises.map(exercise => `<li>${exercise}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (data.professional_help) {
+            html += `
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-yellow-900 mb-2 flex items-center">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>
+                        Professional Support Recommended
+                    </h5>
+                    <p class="text-yellow-800">${data.professional_help}</p>
+                </div>
+            `;
+        }
+
+        if (data.encouragement) {
+            html += `
+                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                    <h5 class="font-semibold text-indigo-900 mb-2 flex items-center">
+                        <i data-lucide="star" class="w-5 h-5 mr-2"></i>
+                        Words of Encouragement
+                    </h5>
+                    <p class="text-indigo-800">${data.encouragement}</p>
+                </div>
+            `;
+        }
+
+        contentDiv.innerHTML = html;
+        lucide.createIcons();
+    }
+
+    function quickMoodCheck(mood) {
+        // Save quick mood check
+        fetch('/api/wellness/log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                mood: mood,
+                energy_level: mood === 'great' ? 9 : mood === 'good' ? 7 : mood === 'okay' ? 5 : 3,
+                notes: `Quick mood check-in: ${mood}`
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error saving mood check: ' + data.error);
+            } else {
+                const resultDiv = document.getElementById('moodCheckResult');
+                resultDiv.classList.remove('hidden');
+                setTimeout(() => {
+                    resultDiv.classList.add('hidden');
+                }, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving your mood check.');
+        });
+    }
+</script>
+{% endblock %}

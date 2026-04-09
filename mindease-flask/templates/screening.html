@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Health Screening - MindEase{% endblock %}
+{% block page_title %}Health Screening{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Info Section -->
+    <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6 border border-orange-200">
+        <div class="flex items-start space-x-4">
+            <i data-lucide="clipboard-check" class="w-6 h-6 text-orange-600 mt-1"></i>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Comprehensive Health Screening</h3>
+                <p class="text-sm text-gray-700">Take our comprehensive health screening to assess your overall health status and identify potential areas for improvement.</p>
+                <p class="text-xs text-orange-600 mt-2">* Results are for informational purposes and should not replace professional medical advice</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screening Questionnaire -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="file-text" class="w-6 h-6 mr-2 text-orange-600"></i>
+            Health Screening Questionnaire
+        </h3>
+
+        <form id="screeningForm" class="space-y-8">
+            <!-- Personal Information -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-900 mb-4">Personal Information</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="screeningAge" class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                        <input type="number" id="screeningAge" min="1" max="120" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Your age">
+                    </div>
+                    <div>
+                        <label for="screeningGender" class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                        <select id="screeningGender" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle Questions -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-900 mb-4">Lifestyle & Habits</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">How often do you exercise?</label>
+                        <select id="exerciseFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <option value="">Select frequency</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Several times a week</option>
+                            <option value="monthly">Once a month</option>
+                            <option value="rarely">Rarely or never</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">How would you describe your diet?</label>
+                        <select id="dietQuality" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <option value="">Select option</option>
+                            <option value="excellent">Very healthy (mostly fruits, vegetables, lean proteins)</option>
+                            <option value="good">Healthy (balanced with some processed foods)</option>
+                            <option value="fair">Average (mix of healthy and unhealthy foods)</option>
+                            <option value="poor">Unhealthy (mostly processed/fast foods)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">How many hours of sleep do you get per night?</label>
+                        <select id="sleepHours" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <option value="">Select hours</option>
+                            <option value="8+">8+ hours</option>
+                            <option value="7-8">7-8 hours</option>
+                            <option value="6-7">6-7 hours</option>
+                            <option value="5-6">5-6 hours</option>
+                            <option value="less-5">Less than 5 hours</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Do you smoke or use tobacco products?</label>
+                        <select id="smokingStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <option value="">Select option</option>
+                            <option value="never">Never</option>
+                            <option value="former">Former smoker</option>
+                            <option value="occasional">Occasional</option>
+                            <option value="regular">Regular smoker</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health History -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-900 mb-4">Health History</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Do you have any chronic conditions?</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" value="diabetes" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                <span class="ml-2 text-sm text-gray-700">Diabetes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="hypertension" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                <span class="ml-2 text-sm text-gray-700">High blood pressure</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="heart-disease" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                <span class="ml-2 text-sm text-gray-700">Heart disease</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="asthma" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                <span class="ml-2 text-sm text-gray-700">Asthma</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" value="other" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                <span class="ml-2 text-sm text-gray-700">Other</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="familyHistory" class="block text-sm font-medium text-gray-700 mb-2">Family history of diseases (optional)</label>
+                        <textarea id="familyHistory" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Any family members with chronic conditions..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Health Status -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-900 mb-4">Current Health Status</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">How would you rate your overall health?</label>
+                        <select id="overallHealth" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <option value="">Select rating</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="very-good">Very good</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="currentSymptoms" class="block text-sm font-medium text-gray-700 mb-2">Any current symptoms or concerns?</label>
+                        <textarea id="currentSymptoms" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Describe any current symptoms or health concerns..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-orange-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center">
+                <i data-lucide="clipboard-check" class="w-5 h-5 mr-2"></i>
+                Generate Health Screening Report
+            </button>
+        </form>
+
+        <!-- Results Section -->
+        <div id="screeningResults" class="mt-6 hidden">
+            <div class="border-t pt-6">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Your Health Screening Results</h4>
+                <div id="screeningContent" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle screening form submission
+    document.getElementById('screeningForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        performScreening();
+    });
+
+    function performScreening() {
+        const age = document.getElementById('screeningAge').value;
+        const gender = document.getElementById('screeningGender').value;
+        const exerciseFrequency = document.getElementById('exerciseFrequency').value;
+        const dietQuality = document.getElementById('dietQuality').value;
+        const sleepHours = document.getElementById('sleepHours').value;
+        const smokingStatus = document.getElementById('smokingStatus').value;
+        const overallHealth = document.getElementById('overallHealth').value;
+        const currentSymptoms = document.getElementById('currentSymptoms').value;
+        const familyHistory = document.getElementById('familyHistory').value;
+
+        // Get selected chronic conditions
+        const chronicConditions = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+        if (!age || !gender) {
+            alert('Please provide your age and gender.');
+            return;
+        }
+
+        const resultsDiv = document.getElementById('screeningResults');
+        const contentDiv = document.getElementById('screeningContent');
+
+        // Show loading
+        resultsDiv.classList.remove('hidden');
+        contentDiv.innerHTML = '<div class="flex items-center justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div></div>';
+
+        // Prepare data for analysis
+        const screeningData = {
+            age: parseInt(age),
+            gender: gender,
+            exercise_frequency: exerciseFrequency,
+            diet_quality: dietQuality,
+            sleep_hours: sleepHours,
+            smoking_status: smokingStatus,
+            chronic_conditions: chronicConditions,
+            overall_health: overallHealth,
+            current_symptoms: currentSymptoms,
+            family_history: familyHistory
+        };
+
+        // Send to API for analysis
+        fetch('/api/health/analyze-metrics', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(screeningData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                contentDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4"><p class="text-red-800">${data.error}</p></div>`;
+            } else {
+                displayScreeningResults(data, screeningData);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            contentDiv.innerHTML = '<div class="bg-red-50 border border-red-200 rounded-lg p-4"><p class="text-red-800">An error occurred. Please try again.</p></div>';
+        });
+    }
+
+    function displayScreeningResults(data, screeningData) {
+        const contentDiv = document.getElementById('screeningContent');
+
+        let html = '';
+
+        // Health Score
+        if (data.health_score !== undefined) {
+            const scoreColor = data.health_score >= 80 ? 'green' : data.health_score >= 60 ? 'yellow' : 'red';
+            html += `
+                <div class="bg-${scoreColor}-50 border border-${scoreColor}-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-${scoreColor}-900 mb-2 flex items-center">
+                        <i data-lucide="award" class="w-5 h-5 mr-2"></i>
+                        Overall Health Score
+                    </h5>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-3xl font-bold text-${scoreColor}-600">${data.health_score}/100</div>
+                        <div class="flex-1 bg-${scoreColor}-200 rounded-full h-3">
+                            <div class="bg-${scoreColor}-600 h-3 rounded-full" style="width: ${data.health_score}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Risk Factors
+        if (data.risk_factors && data.risk_factors.length > 0) {
+            html += `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-red-900 mb-2 flex items-center">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>
+                        Risk Factors Identified
+                    </h5>
+                    <ul class="list-disc list-inside text-red-800 space-y-1">
+                        ${data.risk_factors.map(factor => `<li>${factor}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Recommendations
+        if (data.recommendations && data.recommendations.length > 0) {
+            html += `
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-blue-900 mb-2 flex items-center">
+                        <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+                        Health Recommendations
+                    </h5>
+                    <ul class="list-disc list-inside text-blue-800 space-y-1">
+                        ${data.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Preventive Measures
+        if (data.preventive_measures && data.preventive_measures.length > 0) {
+            html += `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <h5 class="font-semibold text-green-900 mb-2 flex items-center">
+                        <i data-lucide="shield" class="w-5 h-5 mr-2"></i>
+                        Preventive Measures
+                    </h5>
+                    <ul class="list-disc list-inside text-green-800 space-y-1">
+                        ${data.preventive_measures.map(measure => `<li>${measure}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Next Steps
+        if (data.next_steps) {
+            html += `
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <h5 class="font-semibold text-purple-900 mb-2 flex items-center">
+                        <i data-lucide="arrow-right" class="w-5 h-5 mr-2"></i>
+                        Next Steps
+                    </h5>
+                    <p class="text-purple-800">${data.next_steps}</p>
+                </div>
+            `;
+        }
+
+        contentDiv.innerHTML = html;
+        lucide.createIcons();
+    }
+</script>
+{% endblock %}

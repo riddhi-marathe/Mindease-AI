@@ -31,6 +31,61 @@ def index():
     return render_template('index.html')
 
 
+@main_bp.route('/login')
+def login():
+    """Login page"""
+    return render_template('login.html')
+
+
+@main_bp.route('/dashboard')
+@login_required
+def dashboard():
+    """Dashboard page"""
+    return render_template('dashboard.html')
+
+
+@main_bp.route('/symptom-check')
+@login_required
+def symptom_check_page():
+    """Symptom check page"""
+    return render_template('symptom_check.html')
+
+
+@main_bp.route('/wellness-check')
+@login_required
+def wellness_check_page():
+    """Wellness check page"""
+    return render_template('wellness_check.html')
+
+
+@main_bp.route('/mental-check')
+@login_required
+def mental_check_page():
+    """Mental health check page"""
+    return render_template('mental_check.html')
+
+
+@main_bp.route('/screening')
+@login_required
+def screening_page():
+    """Health screening page"""
+    return render_template('screening.html')
+
+
+@main_bp.route('/tracker')
+@login_required
+def tracker_page():
+    """Health tracker page"""
+    return render_template('tracker.html')
+
+
+@main_bp.route('/chat')
+@login_required
+def chat_page():
+    """AI chat page"""
+    return render_template('chat.html')
+
+
 @main_bp.route('/api/health/symptom-check', methods=['POST'])
 def symptom_check():
     """

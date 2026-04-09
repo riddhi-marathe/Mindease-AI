@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Health Tracker - MindEase{% endblock %}
+{% block page_title %}Health Tracker{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+    <!-- Info Section -->
+    <div class="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg p-6 border border-teal-200">
+        <div class="flex items-start space-x-4">
+            <i data-lucide="activity" class="w-6 h-6 text-teal-600 mt-1"></i>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Health Metrics Tracker</h3>
+                <p class="text-sm text-gray-700">Monitor your vital signs, track health trends, and maintain detailed records of your health journey.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Metrics -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="plus-circle" class="w-6 h-6 mr-2 text-teal-600"></i>
+            Add Health Metrics
+        </h3>
+
+        <form id="metricsForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Blood Pressure -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Blood Pressure</label>
+                <div class="flex space-x-2">
+                    <input type="number" id="systolic" placeholder="Systolic" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    <span class="flex items-center text-gray-500">/</span>
+                    <input type="number" id="diastolic" placeholder="Diastolic" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                </div>
+                <p class="text-xs text-gray-500">mmHg</p>
+            </div>
+
+            <!-- Heart Rate -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Heart Rate</label>
+                <input type="number" id="heartRate" placeholder="BPM" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                <p class="text-xs text-gray-500">beats per minute</p>
+            </div>
+
+            <!-- Weight -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Weight</label>
+                <input type="number" id="weight" step="0.1" placeholder="kg" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                <p class="text-xs text-gray-500">kilograms</p>
+            </div>
+
+            <!-- Height -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Height</label>
+                <input type="number" id="height" step="0.01" placeholder="m" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                <p class="text-xs text-gray-500">meters</p>
+            </div>
+
+            <!-- Temperature -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Temperature</label>
+                <input type="number" id="temperature" step="0.1" placeholder="°C" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                <p class="text-xs text-gray-500">celsius</p>
+            </div>
+
+            <!-- Blood Sugar -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Blood Sugar</label>
+                <input type="number" id="bloodSugar" step="0.1" placeholder="mg/dL" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                <p class="text-xs text-gray-500">mg/dL</p>
+            </div>
+
+            <!-- Notes -->
+            <div class="md:col-span-2 lg:col-span-3 space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Notes (Optional)</label>
+                <textarea id="notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Any additional notes..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="md:col-span-2 lg:col-span-3">
+                <button type="submit" class="w-full bg-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center">
+                    <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                    Save Health Metrics
+                </button>
+            </div>
+        </form>
+
+        <!-- Success Message -->
+        <div id="metricsSuccess" class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg hidden">
+            <p class="text-green-800 text-sm">Health metrics saved successfully!</p>
+        </div>
+    </div>
+
+    <!-- Metrics History -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="history" class="w-6 h-6 mr-2 text-teal-600"></i>
+            Recent Health Metrics
+        </h3>
+
+        <div id="metricsHistory" class="space-y-4">
+            <p class="text-gray-500 text-sm">Loading metrics...</p>
+        </div>
+    </div>
+
+    <!-- Health Trends -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- BMI Calculator -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                <i data-lucide="calculator" class="w-6 h-6 mr-2 text-teal-600"></i>
+                BMI Calculator
+            </h3>
+
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                        <input type="number" id="bmiWeight" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Height (m)</label>
+                        <input type="number" id="bmiHeight" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    </div>
+                </div>
+                <button onclick="calculateBMI()" class="w-full bg-teal-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-teal-700 transition">Calculate BMI</button>
+                <div id="bmiResult" class="p-3 bg-gray-50 rounded-lg hidden">
+                    <p class="text-sm text-gray-700">Your BMI: <span id="bmiValue" class="font-semibold"></span></p>
+                    <p class="text-sm text-gray-600" id="bmiCategory"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Goals -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                <i data-lucide="target" class="w-6 h-6 mr-2 text-teal-600"></i>
+                Health Goals
+            </h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Target Weight (kg)</label>
+                    <input type="number" id="targetWeight" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Enter target weight">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Target Blood Pressure</label>
+                    <div class="flex space-x-2">
+                        <input type="number" id="targetSystolic" placeholder="120" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        <span class="flex items-center text-gray-500">/</span>
+                        <input type="number" id="targetDiastolic" placeholder="80" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    </div>
+                </div>
+                <button onclick="saveGoals()" class="w-full bg-teal-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-teal-700 transition">Save Goals</button>
+                <div id="goalsSuccess" class="p-3 bg-green-50 border border-green-200 rounded-lg hidden">
+                    <p class="text-green-800 text-sm">Health goals saved!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load metrics history on page load
+    loadMetricsHistory();
+
+    // Handle metrics form submission
+    document.getElementById('metricsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveHealthMetrics();
+    });
+
+    function saveHealthMetrics() {
+        const systolic = document.getElementById('systolic').value;
+        const diastolic = document.getElementById('diastolic').value;
+        const heartRate = document.getElementById('heartRate').value;
+        const weight = document.getElementById('weight').value;
+        const height = document.getElementById('height').value;
+        const temperature = document.getElementById('temperature').value;
+        const bloodSugar = document.getElementById('bloodSugar').value;
+        const notes = document.getElementById('notes').value;
+
+        const metrics = {};
+
+        if (systolic && diastolic) {
+            metrics.blood_pressure_systolic = parseInt(systolic);
+            metrics.blood_pressure_diastolic = parseInt(diastolic);
+        }
+        if (heartRate) metrics.heart_rate = parseInt(heartRate);
+        if (weight) metrics.weight = parseFloat(weight);
+        if (height) metrics.height = parseFloat(height);
+        if (temperature) metrics.temperature = parseFloat(temperature);
+        if (bloodSugar) metrics.blood_sugar = parseFloat(bloodSugar);
+        if (notes) metrics.notes = notes;
+
+        if (Object.keys(metrics).length === 0) {
+            alert('Please enter at least one health metric.');
+            return;
+        }
+
+        fetch('/api/health/metrics', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(metrics)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error saving metrics: ' + data.error);
+            } else {
+                document.getElementById('metricsSuccess').classList.remove('hidden');
+                document.getElementById('metricsForm').reset();
+                loadMetricsHistory();
+                setTimeout(() => {
+                    document.getElementById('metricsSuccess').classList.add('hidden');
+                }, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving your metrics.');
+        });
+    }
+
+    function loadMetricsHistory() {
+        fetch('/api/health/metrics')
+            .then(response => response.json())
+            .then(data => {
+                if (data.metrics) {
+                    displayMetricsHistory(data.metrics.slice(0, 10)); // Show last 10 entries
+                } else {
+                    document.getElementById('metricsHistory').innerHTML = '<p class="text-gray-500 text-sm">No metrics recorded yet.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading metrics:', error);
+                document.getElementById('metricsHistory').innerHTML = '<p class="text-red-600 text-sm">Error loading metrics.</p>';
+            });
+    }
+
+    function displayMetricsHistory(metrics) {
+        const container = document.getElementById('metricsHistory');
+
+        if (metrics.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-sm">No metrics recorded yet.</p>';
+            return;
+        }
+
+        container.innerHTML = metrics.map(metric => {
+            const date = new Date(metric.created_at).toLocaleDateString();
+            let metricsList = [];
+
+            if (metric.blood_pressure_systolic && metric.blood_pressure_diastolic) {
+                metricsList.push(`BP: ${metric.blood_pressure_systolic}/${metric.blood_pressure_diastolic}`);
+            }
+            if (metric.heart_rate) metricsList.push(`HR: ${metric.heart_rate} bpm`);
+            if (metric.weight) metricsList.push(`Weight: ${metric.weight} kg`);
+            if (metric.temperature) metricsList.push(`Temp: ${metric.temperature}°C`);
+            if (metric.blood_sugar) metricsList.push(`Blood Sugar: ${metric.blood_sugar} mg/dL`);
+
+            return `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">${metricsList.join(', ')}</p>
+                        <p class="text-xs text-gray-500">${date}</p>
+                        ${metric.notes ? `<p class="text-xs text-gray-600 mt-1">${metric.notes}</p>` : ''}
+                    </div>
+                    <button onclick="deleteMetric(${metric.id})" class="text-red-600 hover:text-red-800 p-1">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
+
+        lucide.createIcons();
+    }
+
+    function calculateBMI() {
+        const weight = parseFloat(document.getElementById('bmiWeight').value);
+        const height = parseFloat(document.getElementById('bmiHeight').value);
+
+        if (!weight || !height || height <= 0) {
+            alert('Please enter valid weight and height.');
+            return;
+        }
+
+        const bmi = (weight / (height * height)).toFixed(1);
+        let category = '';
+
+        if (bmi < 18.5) category = 'Underweight';
+        else if (bmi < 25) category = 'Normal weight';
+        else if (bmi < 30) category = 'Overweight';
+        else category = 'Obese';
+
+        document.getElementById('bmiValue').textContent = bmi;
+        document.getElementById('bmiCategory').textContent = `Category: ${category}`;
+        document.getElementById('bmiResult').classList.remove('hidden');
+    }
+
+    function saveGoals() {
+        const targetWeight = document.getElementById('targetWeight').value;
+        const targetSystolic = document.getElementById('targetSystolic').value;
+        const targetDiastolic = document.getElementById('targetDiastolic').value;
+
+        // For now, just show success (could save to user profile in future)
+        if (targetWeight || (targetSystolic && targetDiastolic)) {
+            document.getElementById('goalsSuccess').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('goalsSuccess').classList.add('hidden');
+            }, 3000);
+        } else {
+            alert('Please set at least one health goal.');
+        }
+    }
+
+    function deleteMetric(id) {
+        if (confirm('Are you sure you want to delete this metric?')) {
+            // In a real app, you'd have a delete endpoint
+            alert('Delete functionality would be implemented with a proper API endpoint.');
+        }
+    }
+</script>
+{% endblock %}

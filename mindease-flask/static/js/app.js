@@ -75,9 +75,8 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         if (response.ok) {
             showAlert('Login successful!', 'success');
             closeLoginModal();
-            document.getElementById('loginBtn').textContent = 'Logout';
-            document.getElementById('dashboard').classList.remove('hidden');
-            loadDashboard();
+            // Redirect to dashboard
+            window.location.href = '/dashboard';
         } else {
             showAlert('Login failed. Check your credentials.', 'error');
         }
@@ -107,9 +106,8 @@ document.getElementById('registerForm')?.addEventListener('submit', async (e) =>
         if (response.ok) {
             showAlert('Registration successful! You are now logged in.', 'success');
             closeRegisterModal();
-            document.getElementById('loginBtn').textContent = 'Logout';
-            document.getElementById('dashboard').classList.remove('hidden');
-            loadDashboard();
+            // Redirect to dashboard
+            window.location.href = '/dashboard';
         } else {
             showAlert('Registration failed. Try a different username or email.', 'error');
         }

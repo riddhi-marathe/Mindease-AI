@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}AI Chat - MindEase{% endblock %}
+{% block page_title %}AI Chat{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto h-[calc(100vh-12rem)]">
+    <!-- Info Section -->
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 mb-6 border border-indigo-200">
+        <div class="flex items-start space-x-3">
+            <i data-lucide="message-circle" class="w-5 h-5 text-indigo-600 mt-1"></i>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-1">AI Health Assistant</h3>
+                <p class="text-xs text-gray-700">Chat with our AI for personalized health advice, wellness tips, and mental health support.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="bg-white rounded-lg shadow h-full flex flex-col">
+        <!-- Chat Header -->
+        <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i data-lucide="bot" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold">MindEase AI Assistant</h3>
+                    <p class="text-sm opacity-90">Online • Ready to help</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="chatMessages" class="flex-1 p-4 space-y-4 overflow-y-auto">
+            <!-- Welcome Message -->
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="bot" class="w-4 h-4 text-indigo-600"></i>
+                </div>
+                <div class="bg-gray-100 rounded-lg p-3 max-w-xs lg:max-w-md">
+                    <p class="text-sm text-gray-800">Hello! I'm your AI health assistant. I can help you with:</p>
+                    <ul class="text-xs text-gray-600 mt-2 space-y-1">
+                        <li>• Health and wellness advice</li>
+                        <li>• Symptom analysis</li>
+                        <li>• Mental health support</li>
+                        <li>• Lifestyle recommendations</li>
+                    </ul>
+                    <p class="text-xs text-gray-500 mt-2">How can I help you today?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex space-x-3">
+                <div class="flex-1">
+                    <textarea
+                        id="messageInput"
+                        rows="1"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                        placeholder="Type your health question here..."
+                        onkeydown="handleKeyPress(event)"
+                    ></textarea>
+                </div>
+                <button
+                    onclick="sendMessage()"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
+                >
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Remember: This is not medical advice. Consult healthcare professionals for serious concerns.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let isTyping = false;
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+
+        if (!message || isTyping) return;
+
+        // Add user message
+        addMessage(message, 'user');
+        input.value = '';
+
+        // Show typing indicator
+        showTypingIndicator();
+
+        // Send to AI
+        fetch('/api/health/wellness-check', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                symptoms: '',
+                health_history: '',
+                lifestyle: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideTypingIndicator();
+
+            if (data.error) {
+                addMessage('I apologize, but I encountered an error. Please try again.', 'assistant');
+            } else {
+                let response = '';
+
+                if (Array.isArray(data.recommendations)) {
+                    response += data.recommendations.join(' ') + ' ';
+                } else if (typeof data.recommendations === 'string') {
+                    response += data.recommendations + ' ';
+                }
+
+                if (Array.isArray(data.lifestyle_suggestions)) {
+                    response += data.lifestyle_suggestions.join(' ') + ' ';
+                } else if (typeof data.lifestyle_suggestions === 'string') {
+                    response += data.lifestyle_suggestions + ' ';
+                }
+
+                if (data.wellness_score) {
+                    response += `Based on what you've shared, your wellness score is ${data.wellness_score}/100. `;
+                }
+
+                if (!response.trim()) {
+                    response = "Thank you for sharing. I'm here to help with any health or wellness questions you have. Feel free to ask about symptoms, lifestyle changes, or general health advice.";
+                }
+
+                addMessage(response.trim(), 'assistant');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            hideTypingIndicator();
+            addMessage('I apologize, but I encountered an error. Please try again.', 'assistant');
+        });
+    }
+
+    function addMessage(content, sender) {
+        const messagesContainer = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flex items-start space-x-3 ${sender === 'user' ? 'justify-end' : ''}`;
+
+        if (sender === 'user') {
+            messageDiv.innerHTML = `
+                <div class="bg-indigo-600 text-white rounded-lg p-3 max-w-xs lg:max-w-md">
+                    <p class="text-sm">${content}</p>
+                </div>
+                <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                </div>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="bot" class="w-4 h-4 text-indigo-600"></i>
+                </div>
+                <div class="bg-gray-100 rounded-lg p-3 max-w-xs lg:max-w-md">
+                    <p class="text-sm text-gray-800">${content}</p>
+                </div>
+            `;
+        }
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        lucide.createIcons();
+    }
+
+    function showTypingIndicator() {
+        isTyping = true;
+        const messagesContainer = document.getElementById('chatMessages');
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'typingIndicator';
+        typingDiv.className = 'flex items-start space-x-3';
+        typingDiv.innerHTML = `
+            <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="bot" class="w-4 h-4 text-indigo-600"></i>
+            </div>
+            <div class="bg-gray-100 rounded-lg p-3">
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+            </div>
+        `;
+
+        messagesContainer.appendChild(typingDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        lucide.createIcons();
+    }
+
+    function hideTypingIndicator() {
+        isTyping = false;
+        const typingDiv = document.getElementById('typingIndicator');
+        if (typingDiv) {
+            typingDiv.remove();
+        }
+    }
+
+    // Quick suggestions
+    function addQuickSuggestion(text) {
+        document.getElementById('messageInput').value = text;
+        sendMessage();
+    }
+</script>
+
+<!-- Quick Suggestions (could be added later) -->
+<div class="hidden" id="quickSuggestions">
+    <div class="grid grid-cols-2 gap-2 mt-4">
+        <button onclick="addQuickSuggestion('How can I improve my sleep?')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition">Sleep tips</button>
+        <button onclick="addQuickSuggestion('What are some stress management techniques?')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition">Stress management</button>
+        <button onclick="addQuickSuggestion('How to maintain a healthy diet?')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition">Healthy eating</button>
+        <button onclick="addQuickSuggestion('Exercise recommendations for beginners')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition">Exercise tips</button>
+    </div>
+</div>
+{% endblock %}
