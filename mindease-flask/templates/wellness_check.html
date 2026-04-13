@@ -3,6 +3,10 @@
 {% block title %}Wellness Check - MindEase{% endblock %}
 {% block page_title %}Wellness Check{% endblock %}
 
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-4xl mx-auto space-y-6">
     <!-- Info Section -->
@@ -55,6 +59,46 @@
                 <h4 class="text-lg font-semibold text-gray-900 mb-4">Your Wellness Plan</h4>
                 <div id="wellnessContent" class="space-y-4"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Wellness Charts -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="bar-chart-3" class="w-6 h-6 mr-2 text-green-600"></i>
+            Wellness Trends
+        </h3>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Mood Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">Mood Trends</h4>
+                <canvas id="moodChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Sleep Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">Sleep Patterns</h4>
+                <canvas id="sleepChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Energy Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">Energy Levels</h4>
+                <canvas id="energyChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Stress Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">Stress Levels</h4>
+                <canvas id="stressChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <button onclick="loadWellnessData()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+                Refresh Charts
+            </button>
         </div>
     </div>
 
@@ -123,6 +167,163 @@
 </div>
 
 <script>
+    let moodChart, sleepChart, energyChart, stressChart;
+
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+        loadWellnessData();
+    });
+
+    function loadWellnessData() {
+        fetch('/api/wellness/logs')
+        .then(response => response.json())
+        .then(data => {
+            if (data.logs && data.logs.length > 0) {
+                updateCharts(data.logs);
+            } else {
+                // Show empty state
+                showEmptyCharts();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading wellness data:', error);
+            showEmptyCharts();
+        });
+    }
+
+    function updateCharts(logs) {
+        // Prepare data
+        const labels = logs.slice(-7).map(log => new Date(log.created_at).toLocaleDateString());
+        const moodData = logs.slice(-7).map(log => getMoodValue(log.mood));
+        const sleepData = logs.slice(-7).map(log => log.sleep_hours || 0);
+        const energyData = logs.slice(-7).map(log => log.energy_level || 5);
+        const stressData = logs.slice(-7).map(log => log.stress_level || 5);
+
+        // Mood Chart
+        const moodCtx = document.getElementById('moodChart').getContext('2d');
+        if (moodChart) moodChart.destroy();
+        moodChart = new Chart(moodCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Mood',
+                    data: moodData,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
+            }
+        });
+
+        // Sleep Chart
+        const sleepCtx = document.getElementById('sleepChart').getContext('2d');
+        if (sleepChart) sleepChart.destroy();
+        sleepChart = new Chart(sleepCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sleep Hours',
+                    data: sleepData,
+                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                    borderColor: 'rgb(16, 185, 129)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 12
+                    }
+                }
+            }
+        });
+
+        // Energy Chart
+        const energyCtx = document.getElementById('energyChart').getContext('2d');
+        if (energyChart) energyChart.destroy();
+        energyChart = new Chart(energyCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Energy Level',
+                    data: energyData,
+                    borderColor: 'rgb(245, 158, 11)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
+            }
+        });
+
+        // Stress Chart
+        const stressCtx = document.getElementById('stressChart').getContext('2d');
+        if (stressChart) stressChart.destroy();
+        stressChart = new Chart(stressCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Stress Level',
+                    data: stressData,
+                    borderColor: 'rgb(239, 68, 68)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
+            }
+        });
+    }
+
+    function showEmptyCharts() {
+        const emptyMessage = '<div class="text-center py-8 text-gray-500">No wellness data available. Start logging your daily wellness to see trends!</div>';
+        
+        ['moodChart', 'sleepChart', 'energyChart', 'stressChart'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+            const container = document.getElementById(id).parentElement;
+            if (!container.querySelector('.empty-message')) {
+                container.insertAdjacentHTML('beforeend', '<div class="empty-message">' + emptyMessage + '</div>');
+            }
+        });
+    }
+
+    function getMoodValue(mood) {
+        const moodMap = {
+            'terrible': 1, 'bad': 2, 'poor': 3, 'okay': 4, 'fair': 5,
+            'good': 6, 'great': 7, 'excellent': 8, 'amazing': 9, 'perfect': 10
+        };
+        return moodMap[mood] || 5;
+    }
+
     // Update energy level display
     document.getElementById('energyLevel').addEventListener('input', function() {
         document.getElementById('energyDisplay').textContent = this.value;

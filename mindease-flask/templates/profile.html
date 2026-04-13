@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - MindEase{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Profile Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+        <div class="flex items-start space-x-4">
+            <i data-lucide="user" class="w-6 h-6 text-blue-600 mt-1"></i>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Personal Profile</h3>
+                <p class="text-sm text-gray-700">Manage your account information and health preferences.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Information -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="user-check" class="w-6 h-6 mr-2 text-blue-600"></i>
+            Account Information
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Username -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <div class="flex items-center px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
+                    <span class="text-gray-900">{{ user.username }}</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Username cannot be changed</p>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <div class="flex items-center px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
+                    <span class="text-gray-900">{{ user.email }}</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+            </div>
+
+            <!-- Age -->
+            <div>
+                <label for="profileAge" class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                <input type="number" id="profileAge" value="{{ user.age or '' }}" min="1" max="120" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Gender -->
+            <div>
+                <label for="profileGender" class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                <select id="profileGender" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">Select gender</option>
+                    <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                    <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+                    <option value="prefer-not-to-say" {% if user.gender == 'prefer-not-to-say' %}selected{% endif %}>Prefer not to say</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Medical History -->
+        <div class="mt-6">
+            <label for="medicalHistory" class="block text-sm font-medium text-gray-700 mb-2">Medical History</label>
+            <textarea id="medicalHistory" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter any relevant medical history, allergies, or chronic conditions...">{{ user.medical_history or '' }}</textarea>
+            <p class="text-xs text-gray-500 mt-1">This information helps provide more personalized health recommendations</p>
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-6 flex justify-end">
+            <button onclick="updateProfile()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 flex items-center">
+                <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                Save Changes
+            </button>
+        </div>
+
+        <!-- Success Message -->
+        <div id="profileSuccess" class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg hidden">
+            <p class="text-green-800 text-sm flex items-center">
+                <i data-lucide="check-circle" class="w-4 h-4 mr-2"></i>
+                Profile updated successfully!
+            </p>
+        </div>
+    </div>
+
+    <!-- Account Statistics -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="bar-chart-3" class="w-6 h-6 mr-2 text-green-600"></i>
+            Account Statistics
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Member Since -->
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                <i data-lucide="calendar" class="w-8 h-8 text-blue-600 mx-auto mb-2"></i>
+                <h4 class="font-semibold text-gray-900">Member Since</h4>
+                <p class="text-gray-600">{{ user.created_at.strftime('%B %Y') if user.created_at else 'N/A' }}</p>
+            </div>
+
+            <!-- Assessments Count -->
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+                <i data-lucide="clipboard-check" class="w-8 h-8 text-green-600 mx-auto mb-2"></i>
+                <h4 class="font-semibold text-gray-900">Health Assessments</h4>
+                <p class="text-gray-600" id="assessmentsCount">Loading...</p>
+            </div>
+
+            <!-- Wellness Logs -->
+            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                <i data-lucide="heart" class="w-8 h-8 text-purple-600 mx-auto mb-2"></i>
+                <h4 class="font-semibold text-gray-900">Wellness Logs</h4>
+                <p class="text-gray-600" id="wellnessLogsCount">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="activity" class="w-6 h-6 mr-2 text-orange-600"></i>
+            Recent Activity
+        </h3>
+
+        <div id="recentActivity" class="space-y-4">
+            <p class="text-gray-500 text-sm">Loading recent activity...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load profile statistics on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProfileStats();
+        loadRecentActivity();
+    });
+
+    function updateProfile() {
+        const age = document.getElementById('profileAge').value;
+        const gender = document.getElementById('profileGender').value;
+        const medicalHistory = document.getElementById('medicalHistory').value;
+
+        const updateData = {};
+        if (age) updateData.age = parseInt(age);
+        if (gender) updateData.gender = gender;
+        updateData.medical_history = medicalHistory;
+
+        fetch('/api/user/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                const successDiv = document.getElementById('profileSuccess');
+                successDiv.classList.remove('hidden');
+                setTimeout(() => {
+                    successDiv.classList.add('hidden');
+                }, 3000);
+            } else if (data.error) {
+                alert('Error updating profile: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating your profile.');
+        });
+    }
+
+    function loadProfileStats() {
+        // Load assessments count
+        fetch('/api/assessments')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('assessmentsCount').textContent = data.assessments ? data.assessments.length : 0;
+        })
+        .catch(error => {
+            console.error('Error loading assessments:', error);
+            document.getElementById('assessmentsCount').textContent = 'N/A';
+        });
+
+        // Load wellness logs count
+        fetch('/api/wellness/logs')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('wellnessLogsCount').textContent = data.logs ? data.logs.length : 0;
+        })
+        .catch(error => {
+            console.error('Error loading wellness logs:', error);
+            document.getElementById('wellnessLogsCount').textContent = 'N/A';
+        });
+    }
+
+    function loadRecentActivity() {
+        // Load recent assessments and wellness logs
+        Promise.all([
+            fetch('/api/assessments').then(r => r.json()),
+            fetch('/api/wellness/logs').then(r => r.json())
+        ])
+        .then(([assessmentsData, logsData]) => {
+            const activities = [];
+
+            // Add recent assessments
+            if (assessmentsData.assessments) {
+                assessmentsData.assessments.slice(0, 3).forEach(assessment => {
+                    activities.push({
+                        type: 'assessment',
+                        title: `Health Assessment: ${assessment.assessment_type}`,
+                        date: new Date(assessment.created_at).toLocaleDateString(),
+                        icon: 'clipboard-check'
+                    });
+                });
+            }
+
+            // Add recent wellness logs
+            if (logsData.logs) {
+                logsData.logs.slice(0, 3).forEach(log => {
+                    activities.push({
+                        type: 'wellness',
+                        title: 'Wellness Log Entry',
+                        date: new Date(log.created_at).toLocaleDateString(),
+                        icon: 'heart'
+                    });
+                });
+            }
+
+            // Sort by date (most recent first) and take top 5
+            activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const recentActivities = activities.slice(0, 5);
+
+            const activityDiv = document.getElementById('recentActivity');
+            if (recentActivities.length > 0) {
+                activityDiv.innerHTML = recentActivities.map(activity => `
+                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <i data-lucide="${activity.icon}" class="w-5 h-5 text-blue-600"></i>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">${activity.title}</p>
+                            <p class="text-xs text-gray-500">${activity.date}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                activityDiv.innerHTML = '<p class="text-gray-500 text-sm">No recent activity found. Start using MindEase features!</p>';
+            }
+
+            // Re-initialize Lucide icons
+            lucide.createIcons();
+        })
+        .catch(error => {
+            console.error('Error loading recent activity:', error);
+            document.getElementById('recentActivity').innerHTML = '<p class="text-gray-500 text-sm">Unable to load recent activity.</p>';
+        });
+    }
+</script>
+{% endblock %}

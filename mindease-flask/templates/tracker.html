@@ -3,6 +3,10 @@
 {% block title %}Health Tracker - MindEase{% endblock %}
 {% block page_title %}Health Tracker{% endblock %}
 
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-6xl mx-auto space-y-6">
     <!-- Info Section -->
@@ -103,6 +107,46 @@
         </div>
     </div>
 
+    <!-- Health Metrics Charts -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="trending-up" class="w-6 h-6 mr-2 text-teal-600"></i>
+            Health Trends
+        </h3>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Blood Pressure Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">Blood Pressure</h4>
+                <canvas id="bpChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Heart Rate Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">Heart Rate</h4>
+                <canvas id="hrChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Weight Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">Weight</h4>
+                <canvas id="weightChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- BMI Chart -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-4">BMI</h4>
+                <canvas id="bmiChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <button onclick="loadMetricsCharts()" class="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition">
+                Refresh Charts
+            </button>
+        </div>
+    </div>
+
     <!-- Health Trends -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- BMI Calculator -->
@@ -161,6 +205,173 @@
 </div>
 
 <script>
+    let bpChart, hrChart, weightChart, bmiChart;
+
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+        loadMetricsCharts();
+    });
+
+    function loadMetricsCharts() {
+        fetch('/api/health/metrics')
+        .then(response => response.json())
+        .then(data => {
+            if (data.metrics && data.metrics.length > 0) {
+                updateMetricsCharts(data.metrics);
+            } else {
+                showEmptyMetricsCharts();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading metrics:', error);
+            showEmptyMetricsCharts();
+        });
+    }
+
+    function updateMetricsCharts(metrics) {
+        // Prepare data for last 10 entries
+        const recentMetrics = metrics.slice(-10);
+        const labels = recentMetrics.map(m => new Date(m.recorded_at).toLocaleDateString());
+
+        // Blood Pressure
+        const bpData = recentMetrics.map(m => {
+            if (m.metric_type === 'blood_pressure') {
+                const parts = m.value.split('/');
+                return parts.length === 2 ? parseInt(parts[0]) : null;
+            }
+            return null;
+        }).filter(v => v !== null);
+
+        const bpLabels = labels.slice(-bpData.length);
+
+        // Heart Rate
+        const hrData = recentMetrics.filter(m => m.metric_type === 'heart_rate').map(m => parseFloat(m.value));
+
+        // Weight
+        const weightData = recentMetrics.filter(m => m.metric_type === 'weight').map(m => parseFloat(m.value));
+
+        // BMI (if available)
+        const bmiData = recentMetrics.filter(m => m.metric_type === 'bmi').map(m => parseFloat(m.value));
+
+        // Blood Pressure Chart
+        const bpCtx = document.getElementById('bpChart').getContext('2d');
+        if (bpChart) bpChart.destroy();
+        bpChart = new Chart(bpCtx, {
+            type: 'line',
+            data: {
+                labels: bpLabels,
+                datasets: [{
+                    label: 'Systolic BP',
+                    data: bpData,
+                    borderColor: 'rgb(239, 68, 68)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: 90,
+                        suggestedMax: 180
+                    }
+                }
+            }
+        });
+
+        // Heart Rate Chart
+        const hrCtx = document.getElementById('hrChart').getContext('2d');
+        if (hrChart) hrChart.destroy();
+        hrChart = new Chart(hrCtx, {
+            type: 'line',
+            data: {
+                labels: labels.slice(-hrData.length),
+                datasets: [{
+                    label: 'Heart Rate (BPM)',
+                    data: hrData,
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: 50,
+                        suggestedMax: 120
+                    }
+                }
+            }
+        });
+
+        // Weight Chart
+        const weightCtx = document.getElementById('weightChart').getContext('2d');
+        if (weightChart) weightChart.destroy();
+        weightChart = new Chart(weightCtx, {
+            type: 'line',
+            data: {
+                labels: labels.slice(-weightData.length),
+                datasets: [{
+                    label: 'Weight (kg)',
+                    data: weightData,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        // BMI Chart
+        const bmiCtx = document.getElementById('bmiChart').getContext('2d');
+        if (bmiChart) bmiChart.destroy();
+        bmiChart = new Chart(bmiCtx, {
+            type: 'line',
+            data: {
+                labels: labels.slice(-bmiData.length),
+                datasets: [{
+                    label: 'BMI',
+                    data: bmiData,
+                    borderColor: 'rgb(168, 85, 247)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: 15,
+                        suggestedMax: 35
+                    }
+                }
+            }
+        });
+    }
+
+    function showEmptyMetricsCharts() {
+        const emptyMessage = '<div class="text-center py-8 text-gray-500">No health metrics data available. Start tracking your vital signs to see trends!</div>';
+        
+        ['bpChart', 'hrChart', 'weightChart', 'bmiChart'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+            const container = document.getElementById(id).parentElement;
+            if (!container.querySelector('.empty-message')) {
+                container.insertAdjacentHTML('beforeend', '<div class="empty-message">' + emptyMessage + '</div>');
+            }
+        });
+    }
+
     // Load metrics history on page load
     loadMetricsHistory();
 

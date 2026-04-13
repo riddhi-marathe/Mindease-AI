@@ -1,530 +1,446 @@
-from flask import Blueprint, render_template, request, jsonify, session
-from app import db
-from app.models import User, HealthAssessment, WellnessLog, HealthMetric
-from app.services.ai_engine import AIEngine
-from app.services.disease_predictor import DiseasePredictors
-from datetime import datetime
 import json
-from functools import wraps
+from datetime import date
 
-main_bp = Blueprint('main', __name__)
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
+from werkzeug.security import check_password_hash, generate_password_hash
 
-# Initialize services
-ai_engine = AIEngine()
-disease_predictor = DiseasePredictors()
+from . import db
+from .models import HealthAssessment, HealthMetric, User, WellnessLog
+from .services.ai_engine import AIEngine
+from .services.disease_predictor import DiseasePredictors
 
-# Authentication decorator
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return jsonify({'error': 'Unauthorized'}), 401
-        return f(*args, **kwargs)
-    return decorated_function
+main_bp = Blueprint("main", __name__)
 
 
-# ==================== Routes ====================
+def _current_user():
+    user_id = session.get("user_id")
+    if not user_id:
+        return None
+    return db.session.get(User, user_id)
 
-@main_bp.route('/')
+
+def _json_payload():
+    return request.get_json(silent=True) or {}
+
+
+def _assessment_payload(assessment):
+    results = {}
+    if assessment.results:
+        try:
+            results = json.loads(assessment.results)
+        except json.JSONDecodeError:
+            results = {}
+
+    return {
+        "id": assessment.id,
+        "type": assessment.assessment_type,
+        "prediction": (
+            results.get("possible_conditions", [{}])[0].get("name")
+            if results.get("possible_conditions")
+            else results.get("summary", "Assessment")
+        ),
+        "confidence": (
+            results.get("possible_conditions", [{}])[0]
+            .get("confidence", "N/A")
+            .replace("%", "")
+            if results.get("possible_conditions")
+            else "N/A"
+        ),
+        "urgency": assessment.urgency_level,
+        "created_at": assessment.created_at.isoformat(),
+        "results": results,
+    }
+
+
+def _metric_payload(metric):
+    return {
+        "id": metric.id,
+        "metric_type": metric.metric_type,
+        "value": metric.value,
+        "unit": metric.unit,
+        "recorded_at": metric.recorded_at.isoformat(),
+    }
+
+
+def _log_payload(log):
+    return {
+        "id": log.id,
+        "date": log.log_date.isoformat(),
+        "mood": log.mood,
+        "sleep_hours": log.sleep_hours,
+        "exercise_minutes": log.exercise_minutes,
+        "water_intake": log.water_intake,
+        "energy_level": log.energy_level,
+        "stress_level": log.stress_level,
+        "notes": log.notes,
+        "created_at": log.created_at.isoformat(),
+    }
+
+
+def _save_assessment(user, assessment_type, results, symptoms=None):
+    if not user:
+        return None
+
+    assessment = HealthAssessment(
+        user_id=user.id,
+        assessment_type=assessment_type,
+        symptoms=json.dumps(symptoms or {}),
+        results=json.dumps(results),
+        urgency_level=results.get("urgency"),
+        severity_score=results.get("severity_score"),
+        notes=results.get("recommendation") or results.get("support"),
+    )
+    db.session.add(assessment)
+    db.session.commit()
+    return assessment
+
+
+@main_bp.route("/")
 def index():
-    """Home page"""
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@main_bp.route('/login')
-def login():
-    """Login page"""
-    return render_template('login.html')
+@main_bp.route("/login")
+def login_page():
+    return render_template("login.html")
 
 
-@main_bp.route('/dashboard')
-@login_required
+@main_bp.route("/dashboard")
 def dashboard():
-    """Dashboard page"""
-    return render_template('dashboard.html')
+    return render_template("dashboard.html")
 
 
-@main_bp.route('/symptom-check')
-@login_required
+@main_bp.route("/symptom-check")
 def symptom_check_page():
-    """Symptom check page"""
-    return render_template('symptom_check.html')
+    return render_template("symptom_check.html")
 
 
-@main_bp.route('/wellness-check')
-@login_required
+@main_bp.route("/wellness-check")
 def wellness_check_page():
-    """Wellness check page"""
-    return render_template('wellness_check.html')
+    return render_template("wellness_check.html")
 
 
-@main_bp.route('/mental-check')
-@login_required
+@main_bp.route("/mental-check")
 def mental_check_page():
-    """Mental health check page"""
-    return render_template('mental_check.html')
+    return render_template("mental_check.html")
 
 
-@main_bp.route('/screening')
-@login_required
+@main_bp.route("/screening")
 def screening_page():
-    """Health screening page"""
-    return render_template('screening.html')
+    return render_template("screening.html")
 
 
-@main_bp.route('/tracker')
-@login_required
+@main_bp.route("/tracker")
 def tracker_page():
-    """Health tracker page"""
-    return render_template('tracker.html')
+    return render_template("tracker.html")
 
 
-@main_bp.route('/chat')
-@login_required
+@main_bp.route("/chat")
 def chat_page():
-    """AI chat page"""
-    return render_template('chat.html')
+    return render_template("chat.html")
 
 
-@main_bp.route('/api/health/symptom-check', methods=['POST'])
-def symptom_check():
-    """
-    Perform symptom-based disease prediction
-    Expected JSON: {
-        'symptoms': ['fever', 'cough'],
-        'age': 30,
-        'medical_history': []
-    }
-    """
-    try:
-        data = request.get_json()
-        symptoms = data.get('symptoms', [])
-        age = data.get('age')
-        medical_history = data.get('medical_history', [])
-        
-        if not symptoms:
-            return jsonify({'error': 'No symptoms provided'}), 400
-        
-        # Get prediction
-        prediction = disease_predictor.predict_disease(symptoms, age, medical_history)
-        
-        # Save to database if user is logged in
-        if 'user_id' in session:
-            assessment = HealthAssessment(
-                user_id=session['user_id'],
-                assessment_type='symptom_check',
-                symptoms=json.dumps(symptoms),
-                results=json.dumps(prediction),
-                urgency_level=prediction.get('urgency'),
-                severity_score=prediction.get('severity_score'),
-            )
-            db.session.add(assessment)
-            db.session.commit()
-        
-        return jsonify(prediction), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@main_bp.route("/api/user/register", methods=["POST"])
+def register():
+    data = _json_payload()
+    username = (data.get("username") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+    age = data.get("age")
+
+    if not username or not email or not password:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    existing_user = User.query.filter(
+        (User.username == username) | (User.email == email)
+    ).first()
+    if existing_user:
+        return jsonify({"error": "Username or email already exists"}), 409
+
+    user = User(
+        username=username,
+        email=email,
+        password_hash=generate_password_hash(password),
+        age=age,
+    )
+    db.session.add(user)
+    db.session.commit()
+    session["user_id"] = user.id
+
+    return (
+        jsonify(
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "message": "Registration successful",
+            }
+        ),
+        201,
+    )
 
 
-@main_bp.route('/api/health/wellness-check', methods=['POST'])
-def wellness_check():
-    """
-    Generate AI-based wellness recommendations
-    Expected JSON: {
-        'symptoms': 'string',
-        'health_history': 'string',
-        'lifestyle': 'string'
-    }
-    """
-    try:
-        data = request.get_json()
-        symptoms = data.get('symptoms', '')
-        health_history = data.get('health_history', '')
-        lifestyle = data.get('lifestyle', '')
-        
-        # Get AI recommendations
-        recommendations = ai_engine.get_wellness_recommendations(
-            symptoms, health_history, lifestyle
-        )
-        
-        # Save to database if user is logged in
-        if 'user_id' in session:
-            assessment = HealthAssessment(
-                user_id=session['user_id'],
-                assessment_type='wellness',
-                symptoms=json.dumps({
-                    'symptoms': symptoms,
-                    'health_history': health_history,
-                    'lifestyle': lifestyle
-                }),
-                results=json.dumps({'recommendations': recommendations}),
-            )
-            db.session.add(assessment)
-            db.session.commit()
-        
-        return jsonify({
-            'recommendations': recommendations,
-            'timestamp': datetime.utcnow().isoformat()
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@main_bp.route("/api/user/login", methods=["POST"])
+def login():
+    data = _json_payload()
+    username = (data.get("username") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    if not password or not (username or email):
+        return jsonify({"error": "Username/email and password are required"}), 400
+
+    user = None
+    if username:
+        user = User.query.filter_by(username=username).first()
+    if not user and email:
+        user = User.query.filter_by(email=email).first()
+
+    if not user or not check_password_hash(user.password_hash, password):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    session["user_id"] = user.id
+    return jsonify(
+        {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "message": "Login successful",
+        }
+    )
 
 
-@main_bp.route('/api/health/mental-health-support', methods=['POST'])
-def mental_health_support():
-    """
-    Get mental health support and coping strategies
-    Expected JSON: {
-        'mood': 'string',
-        'stressors': 'string',
-        'coping_methods': 'string'
-    }
-    """
-    try:
-        data = request.get_json()
-        mood = data.get('mood', '')
-        stressors = data.get('stressors', '')
-        coping_methods = data.get('coping_methods', '')
-        
-        # Get mental health support
-        support = ai_engine.get_mental_health_support(mood, stressors, coping_methods)
-        
-        # Save to database if user is logged in
-        if 'user_id' in session:
-            assessment = HealthAssessment(
-                user_id=session['user_id'],
-                assessment_type='mental_health',
-                symptoms=json.dumps({
-                    'mood': mood,
-                    'stressors': stressors,
-                    'coping_methods': coping_methods
-                }),
-                results=json.dumps({'support': support}),
-            )
-            db.session.add(assessment)
-            db.session.commit()
-        
-        return jsonify({
-            'support': support,
-            'timestamp': datetime.utcnow().isoformat()
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@main_bp.route("/api/user/logout", methods=["POST"])
+def logout():
+    session.pop("user_id", None)
+    return jsonify({"message": "Logged out successfully"})
 
 
-@main_bp.route('/api/wellness/log', methods=['POST'])
-@login_required
-def create_wellness_log():
-    """
-    Create a wellness log entry
-    Expected JSON: {
-        'mood': 'string',
-        'sleep_hours': float,
-        'exercise_minutes': int,
-        'water_intake': int,
-        'energy_level': int (1-10),
-        'stress_level': int (1-10),
-        'notes': 'string'
-    }
-    """
-    try:
-        data = request.get_json()
+@main_bp.route("/api/user/profile", methods=["GET", "PUT"])
+def user_profile():
+    user = _current_user()
+    if not user:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    if request.method == "PUT":
+        data = _json_payload()
+        # Update user fields
+        if "age" in data:
+            user.age = data["age"]
+        if "gender" in data:
+            user.gender = data["gender"]
+        if "medical_history" in data:
+            user.medical_history = data["medical_history"]
         
-        log = WellnessLog(
-            user_id=session['user_id'],
-            log_date=datetime.utcnow().date(),
-            mood=data.get('mood'),
-            sleep_hours=data.get('sleep_hours'),
-            exercise_minutes=data.get('exercise_minutes'),
-            water_intake=data.get('water_intake'),
-            energy_level=data.get('energy_level'),
-            stress_level=data.get('stress_level'),
-            notes=data.get('notes'),
-        )
-        
-        db.session.add(log)
         db.session.commit()
-        
-        return jsonify({
-            'id': log.id,
-            'message': 'Wellness log created successfully',
-            'log_date': log.log_date.isoformat()
-        }), 201
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"message": "Profile updated successfully"})
+
+    return jsonify(
+        {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "age": user.age,
+            "gender": user.gender,
+            "medical_history": user.medical_history,
+        }
+    )
 
 
-@main_bp.route('/api/wellness/logs', methods=['GET'])
-@login_required
-def get_wellness_logs():
-    """
-    Get user's wellness logs
-    """
-    try:
-        logs = WellnessLog.query.filter_by(user_id=session['user_id']).order_by(
-            WellnessLog.log_date.desc()
-        ).limit(30).all()
-        
-        return jsonify({
-            'logs': [{
-                'id': log.id,
-                'date': log.log_date.isoformat(),
-                'mood': log.mood,
-                'sleep_hours': log.sleep_hours,
-                'exercise_minutes': log.exercise_minutes,
-                'water_intake': log.water_intake,
-                'energy_level': log.energy_level,
-                'stress_level': log.stress_level,
-                'notes': log.notes,
-            } for log in logs]
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@main_bp.route("/profile")
+def profile_page():
+    user = _current_user()
+    if not user:
+        return redirect(url_for("main.login_page"))
+    return render_template("profile.html", user=user)
 
 
-@main_bp.route('/api/health/metrics', methods=['POST'])
-@login_required
-def add_health_metric():
-    """
-    Add a health metric
-    Expected JSON: {
-        'metric_type': 'heart_rate|blood_pressure|weight|temperature',
-        'value': 'string',
-        'unit': 'string'
+@main_bp.route("/api/symptoms-list")
+def symptoms_list():
+    return jsonify(DiseasePredictors.get_symptom_checklist())
+
+
+@main_bp.route("/api/health/symptom-check", methods=["POST"])
+def symptom_check():
+    data = _json_payload()
+    symptoms = data.get("symptoms") or []
+    age_str = data.get("age")
+    age = int(age_str) if age_str and str(age_str).isdigit() else None
+
+    if not symptoms:
+        return jsonify({"error": "At least one symptom is required"}), 400
+
+    results = DiseasePredictors.predict_disease(symptoms, age=age or 30)
+    _save_assessment(
+        _current_user(),
+        "symptom_check",
+        results,
+        symptoms={"symptoms": symptoms, "age": age},
+    )
+    return jsonify(results)
+
+
+@main_bp.route("/api/health/wellness-check", methods=["POST"])
+def wellness_check():
+    data = _json_payload()
+    symptoms = data.get("symptoms", "")
+    health_history = data.get("health_history", "")
+    lifestyle = data.get("lifestyle", "")
+
+    ai = AIEngine()
+    recommendations = ai.get_wellness_recommendations(
+        symptoms, health_history, lifestyle
+    )
+    results = {
+        "recommendations": recommendations,
+        "summary": "Wellness check completed",
     }
-    """
-    try:
-        data = request.get_json()
-        
+    _save_assessment(
+        _current_user(),
+        "wellness",
+        results,
+        symptoms=data,
+    )
+    return jsonify(results)
+
+
+@main_bp.route("/api/health/mental-health-support", methods=["POST"])
+def mental_health_support():
+    data = _json_payload()
+    ai = AIEngine()
+    support = ai.get_mental_health_support(
+        data.get("mood_description", ""),
+        data.get("stressors", ""),
+        data.get("coping_methods", ""),
+    )
+    # Split support into list for frontend
+    support_plan = [line.strip() for line in support.split('\n') if line.strip()]
+    results = {
+        "support_plan": support_plan,
+        "full_support": support,
+        "summary": "Mental health guidance generated",
+    }
+    _save_assessment(
+        _current_user(),
+        "mental_health",
+        results,
+        symptoms=data,
+    )
+    return jsonify(results)
+
+
+@main_bp.route("/api/health/analyze-metrics", methods=["POST"])
+def analyze_metrics():
+    data = _json_payload()
+    ai = AIEngine()
+    analysis = ai.analyze_health_metrics(data)
+    # Mock structured response for screening
+    results = {
+        "health_score": 75,
+        "risk_factors": ["Sedentary lifestyle", "Poor diet quality"] if data.get("exercise_frequency") == "never" or data.get("diet_quality") == "poor" else [],
+        "recommendations": [
+            "Increase physical activity to at least 30 minutes daily",
+            "Improve diet by including more fruits and vegetables",
+            "Ensure 7-9 hours of sleep per night",
+            "Schedule regular health check-ups"
+        ],
+        "preventive_measures": [
+            "Maintain healthy weight",
+            "Avoid smoking",
+            "Limit alcohol consumption",
+            "Stay hydrated"
+        ],
+        "analysis": analysis,
+        "summary": "Health screening completed",
+    }
+    _save_assessment(
+        _current_user(),
+        "health_screening",
+        results,
+        symptoms=data,
+    )
+    return jsonify(results)
+
+
+@main_bp.route("/api/health/metrics", methods=["GET", "POST"])
+def health_metrics():
+    user = _current_user()
+
+    if request.method == "POST":
+        if not user:
+            return jsonify({"error": "Not authenticated"}), 401
+
+        data = _json_payload()
+        metric_type = (data.get("metric_type") or "").strip()
+        value = data.get("value")
+        unit = data.get("unit", "")
+
+        if not metric_type or value in (None, ""):
+            return jsonify({"error": "Metric type and value are required"}), 400
+
         metric = HealthMetric(
-            user_id=session['user_id'],
-            metric_type=data.get('metric_type'),
-            value=data.get('value'),
-            unit=data.get('unit'),
+            user_id=user.id,
+            metric_type=metric_type,
+            value=str(value),
+            unit=unit,
         )
-        
         db.session.add(metric)
         db.session.commit()
-        
-        return jsonify({
-            'id': metric.id,
-            'message': 'Health metric recorded successfully'
-        }), 201
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"message": "Metric added", "metric": _metric_payload(metric)}), 201
+
+    metrics = (
+        HealthMetric.query.filter_by(user_id=user.id).order_by(HealthMetric.recorded_at.desc()).all()
+        if user
+        else []
+    )
+    return jsonify({"metrics": [_metric_payload(metric) for metric in metrics]})
 
 
-@main_bp.route('/api/health/metrics', methods=['GET'])
-@login_required
-def get_health_metrics():
-    """
-    Get user's health metrics
-    """
-    try:
-        metrics = HealthMetric.query.filter_by(user_id=session['user_id']).order_by(
-            HealthMetric.recorded_at.desc()
-        ).limit(50).all()
-        
-        return jsonify({
-            'metrics': [{
-                'id': metric.id,
-                'metric_type': metric.metric_type,
-                'value': metric.value,
-                'unit': metric.unit,
-                'recorded_at': metric.recorded_at.isoformat(),
-            } for metric in metrics]
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@main_bp.route("/api/wellness/log", methods=["POST"])
+def create_wellness_log():
+    user = _current_user()
+    if not user:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    data = _json_payload()
+    log = WellnessLog(
+        user_id=user.id,
+        log_date=date.today(),
+        mood=data.get("mood"),
+        sleep_hours=data.get("sleep_hours"),
+        exercise_minutes=data.get("exercise_minutes"),
+        water_intake=data.get("water_intake"),
+        energy_level=data.get("energy_level"),
+        stress_level=data.get("stress_level"),
+        notes=data.get("notes"),
+    )
+    db.session.add(log)
+    db.session.commit()
+
+    return jsonify({"message": "Wellness log saved", "log": _log_payload(log)}), 201
 
 
-@main_bp.route('/api/assessments', methods=['GET'])
-@login_required
-def get_assessments():
-    """
-    Get user's health assessments
-    """
-    try:
-        assessment_type = request.args.get('type')
-        
-        query = HealthAssessment.query.filter_by(user_id=session['user_id'])
-        if assessment_type:
-            query = query.filter_by(assessment_type=assessment_type)
-        
-        assessments = query.order_by(HealthAssessment.created_at.desc()).limit(50).all()
-        
-        return jsonify({
-            'assessments': [{
-                'id': assessment.id,
-                'type': assessment.assessment_type,
-                'urgency_level': assessment.urgency_level,
-                'severity_score': assessment.severity_score,
-                'created_at': assessment.created_at.isoformat(),
-                'results': json.loads(assessment.results) if assessment.results else {},
-            } for assessment in assessments]
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@main_bp.route("/api/wellness/logs")
+def wellness_logs():
+    user = _current_user()
+    logs = (
+        WellnessLog.query.filter_by(user_id=user.id).order_by(WellnessLog.created_at.desc()).all()
+        if user
+        else []
+    )
+    return jsonify({"logs": [_log_payload(log) for log in logs]})
 
 
-@main_bp.route('/api/user/register', methods=['POST'])
-def register_user():
-    """
-    Register a new user
-    Expected JSON: {
-        'username': 'string',
-        'email': 'string',
-        'password': 'string',
-        'age': int,
-        'gender': 'string'
-    }
-    """
-    try:
-        data = request.get_json()
-        
-        # Check if user exists
-        if User.query.filter_by(username=data.get('username')).first():
-            return jsonify({'error': 'Username already exists'}), 400
-        
-        if User.query.filter_by(email=data.get('email')).first():
-            return jsonify({'error': 'Email already exists'}), 400
-        
-        # Create new user
-        user = User(
-            username=data.get('username'),
-            email=data.get('email'),
-            password_hash=data.get('password'),  # In production, use proper hashing
-            age=data.get('age'),
-            gender=data.get('gender'),
-        )
-        
-        db.session.add(user)
-        db.session.commit()
-        
-        # Set session
-        session['user_id'] = user.id
-        
-        return jsonify({
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'message': 'User registered successfully'
-        }), 201
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@main_bp.route('/api/user/login', methods=['POST'])
-def login_user():
-    """
-    Login user
-    Expected JSON: {
-        'username': 'string',
-        'password': 'string'
-    }
-    """
-    try:
-        data = request.get_json()
-        
-        user = User.query.filter_by(username=data.get('username')).first()
-        
-        if not user:
-            return jsonify({'error': 'Invalid username or password'}), 401
-        
-        # In production, use proper password verification
-        if user.password_hash != data.get('password'):
-            return jsonify({'error': 'Invalid username or password'}), 401
-        
-        session['user_id'] = user.id
-        
-        return jsonify({
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'message': 'Login successful'
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@main_bp.route('/api/user/logout', methods=['POST'])
-def logout_user():
-    """
-    Logout user
-    """
-    session.pop('user_id', None)
-    return jsonify({'message': 'Logout successful'}), 200
-
-
-@main_bp.route('/api/user/profile', methods=['GET'])
-@login_required
-def get_user_profile():
-    """
-    Get user profile
-    """
-    try:
-        user = User.query.get(session['user_id'])
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        return jsonify({
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'age': user.age,
-            'gender': user.gender,
-            'created_at': user.created_at.isoformat(),
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@main_bp.route('/api/symptoms-list', methods=['GET'])
-def get_symptoms_list():
-    """
-    Get list of symptom categories
-    """
-    try:
-        symptoms = disease_predictor.get_symptom_checklist()
-        return jsonify(symptoms), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@main_bp.route('/api/health/analyze-metrics', methods=['POST'])
-def analyze_health_metrics():
-    """
-    Analyze health metrics with AI
-    Expected JSON: {
-        'metrics': {
-            'heart_rate': '72 bpm',
-            'blood_pressure': '120/80 mmHg',
-            'weight': '70 kg'
-        }
-    }
-    """
-    try:
-        data = request.get_json()
-        metrics = data.get('metrics', {})
-        
-        analysis = ai_engine.analyze_health_metrics(metrics)
-        
-        return jsonify({
-            'analysis': analysis,
-            'timestamp': datetime.utcnow().isoformat()
-        }), 200
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@main_bp.route("/api/assessments")
+def assessments():
+    user = _current_user()
+    assessments_list = (
+        HealthAssessment.query.filter_by(user_id=user.id)
+        .order_by(HealthAssessment.created_at.desc())
+        .all()
+        if user
+        else []
+    )
+    return jsonify(
+        {"assessments": [_assessment_payload(assessment) for assessment in assessments_list]}
+    )
