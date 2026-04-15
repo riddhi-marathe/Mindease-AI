@@ -4,165 +4,101 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    <i data-lucide="clipboard-list" class="w-6 h-6 text-blue-600"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Assessments</p>
-                    <p id="totalAssessments" class="text-2xl font-bold text-gray-900">0</p>
+<div class="py-8 px-6 space-y-8 bg-gray-50 min-h-[calc(100vh-12rem)]">
+    <!-- Welcome Heading -->
+    <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Good morning, Alex</h1>
+        <p class="text-xl text-gray-600">Here's what's happening with your wellness today.</p>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Mood Score -->
+        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
+            <div class="w-20 h-20 bg-gradient-to-br from-teal-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg viewBox="0 0 36 36" fill="white" class="w-12 h-12">
+                    <circle cx="18" cy="18" r="16" fill="transparent" stroke="white" stroke-width="2" stroke-dasharray="100.53" stroke-dashoffset="22.53" stroke-linecap="round"/>
+                    <path d="M18 8c2.21 0 4 1.79 4 4s-1.79 4 -4 4 -4 -1.79 -4 -4 1.79 -4 4 -4zM8 18c0 -4.42 3.58 -8 8 -8s8 3.58 8 8 -3.58 8 -8 8 -8 -3.58 -8 -8z" fill="white"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-1">Mood Score</h3>
+            <p class="text-3xl font-bold text-teal-500 mb-2">78/100</p>
+            <p class="text-sm text-gray-500">Doing great today</p>
+        </div>
+
+        <!-- Daily Streak -->
+        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
+            <div class="w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg viewBox="0 0 24 24" fill="white" class="w-12 h-12">
+                    <path d="M18 13h-.68l-2 2h1.91l.9-.9M6.34 7.91L9.91 4.34 11.09 5.52l-2 2M19.66 16.09L16.09 19.66l1.57 1.57 2-2M4.34 16.09L7.91 19.66L6.83 20.74l-2-2M11.91 19.66l3.57 -3.57L19.66 16.09"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-1">Daily Streak</h3>
+            <p class="text-3xl font-bold text-orange-500 mb-2">5 Days</p>
+            <p class="text-sm text-gray-500">Keep it up!</p>
+        </div>
+
+        <!-- Screenings Completed -->
+        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
+            <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg viewBox="0 0 24 24" fill="white" class="w-12 h-12">
+                    <path d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-1">Screenings</h3>
+            <p class="text-3xl font-bold text-green-500 mb-2">12</p>
+            <p class="text-sm text-gray-500">Completed</p>
+        </div>
+
+        <!-- Daily Mood Donut -->
+        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
+            <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg viewBox="0 0 36 36" fill="white" class="w-12 h-12">
+                    <circle cx="18" cy="18" r="16" fill="transparent" stroke="white" stroke-width="3" stroke-dasharray="75" stroke-dashoffset="19" stroke-linecap="round"/>
+                    <circle cx="18" cy="18" r="11" fill="white"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-1">Daily Mood</h3>
+            <p class="text-3xl font-bold text-purple-500 mb-2">Positive</p>
+            <p class="text-sm text-gray-500">Mostly positive</p>
+        </div>
+    </div>
+
+    <!-- Chat Interface Preview -->
+    <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
+        <h3 class="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+            <i data-lucide="message-circle" class="w-8 h-8 mr-3 text-teal-500"></i>
+            Chat Interface Preview
+        </h3>
+        <div class="space-y-4 max-w-2xl mx-auto">
+            <div class="flex justify-start">
+                <div class="bg-gray-200 rounded-2xl rounded-br-sm p-4 max-w-xs">
+                    <p>I've been feeling anxious today.</p>
                 </div>
             </div>
-        </div>
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-green-100 rounded-lg">
-                    <i data-lucide="heart" class="w-6 h-6 text-green-600"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Wellness Logs</p>
-                    <p id="totalLogs" class="text-2xl font-bold text-gray-900">0</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-purple-100 rounded-lg">
-                    <i data-lucide="activity" class="w-6 h-6 text-purple-600"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Health Metrics</p>
-                    <p id="totalMetrics" class="text-2xl font-bold text-gray-900">0</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-2 bg-indigo-100 rounded-lg">
-                    <i data-lucide="calendar" class="w-6 h-6 text-indigo-600"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Last Check</p>
-                    <p id="lastCheck" class="text-lg font-semibold text-gray-900">--</p>
+            <div class="flex justify-end">
+                <div class="bg-teal-500 text-white rounded-2xl rounded-bl-sm p-4 max-w-xs">
+                    <p>I'm here to listen. Can you tell me more about what's causing the anxiety?</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <i data-lucide="clipboard-list" class="w-5 h-5 mr-2 text-blue-600"></i>
-                Recent Assessments
-            </h3>
-            <div id="recentAssessments" class="space-y-3">
-                <p class="text-gray-500 text-sm">No assessments yet</p>
-            </div>
+    <!-- Bottom Control Bar -->
+    <div class="bg-white border-t border-gray-200 p-6 rounded-t-3xl shadow-2xl fixed bottom-0 left-[16rem] right-0">
+        <div class="flex gap-3 max-w-2xl mx-auto">
+            <input type="text" placeholder="Type your message..." class="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+            <button class="px-6 py-3 bg-teal-500 text-white rounded-2xl font-medium hover:bg-teal-600 transition flex-shrink-0 shadow-lg">
+                Send
+            </button>
         </div>
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <i data-lucide="heart" class="w-5 h-5 mr-2 text-green-600"></i>
-                Recent Wellness Logs
-            </h3>
-            <div id="recentLogs" class="space-y-3">
-                <p class="text-gray-500 text-sm">No logs yet</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a href="{{ url_for('main.symptom_check_page') }}" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-                <i data-lucide="stethoscope" class="w-8 h-8 text-blue-600 mb-2"></i>
-                <span class="text-sm font-medium text-gray-900">Symptom Check</span>
-            </a>
-            <a href="{{ url_for('main.wellness_check_page') }}" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
-                <i data-lucide="heart" class="w-8 h-8 text-green-600 mb-2"></i>
-                <span class="text-sm font-medium text-gray-900">Wellness Check</span>
-            </a>
-            <a href="{{ url_for('main.mental_check_page') }}" class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-                <i data-lucide="brain" class="w-8 h-8 text-purple-600 mb-2"></i>
-                <span class="text-sm font-medium text-gray-900">Mental Check</span>
-            </a>
-            <a href="{{ url_for('main.chat_page') }}" class="flex flex-col items-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition">
-                <i data-lucide="message-circle" class="w-8 h-8 text-indigo-600 mb-2"></i>
-                <span class="text-sm font-medium text-gray-900">AI Chat</span>
-            </a>
-        </div>
+        <button class="ml-auto mt-4 px-8 py-3 bg-red-400 text-white rounded-2xl font-semibold hover:bg-red-500 transition shadow-xl absolute bottom-6 right-6 text-lg">
+            Emergency Help
+        </button>
     </div>
 </div>
 
 <script>
-    // Load dashboard data
-    loadDashboardData();
-
-    function loadDashboardData() {
-        // Load stats
-        fetch('/api/assessments')
-            .then(response => response.json())
-            .then(data => {
-                if (data.assessments) {
-                    document.getElementById('totalAssessments').textContent = data.assessments.length;
-                    displayRecentAssessments(data.assessments.slice(0, 5));
-                }
-            })
-            .catch(error => console.error('Error loading assessments:', error));
-
-        fetch('/api/wellness/logs')
-            .then(response => response.json())
-            .then(data => {
-                if (data.logs) {
-                    document.getElementById('totalLogs').textContent = data.logs.length;
-                    displayRecentLogs(data.logs.slice(0, 5));
-                }
-            })
-            .catch(error => console.error('Error loading logs:', error));
-
-        fetch('/api/health/metrics')
-            .then(response => response.json())
-            .then(data => {
-                if (data.metrics) {
-                    document.getElementById('totalMetrics').textContent = data.metrics.length;
-                }
-            })
-            .catch(error => console.error('Error loading metrics:', error));
-    }
-
-    function displayRecentAssessments(assessments) {
-        const container = document.getElementById('recentAssessments');
-        if (assessments.length === 0) return;
-
-        container.innerHTML = assessments.map(assessment => `
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                    <p class="text-sm font-medium text-gray-900">${assessment.prediction || 'Assessment'}</p>
-                    <p class="text-xs text-gray-500">${new Date(assessment.created_at).toLocaleDateString()}</p>
-                </div>
-                <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">${assessment.confidence || 'N/A'}%</span>
-            </div>
-        `).join('');
-    }
-
-    function displayRecentLogs(logs) {
-        const container = document.getElementById('recentLogs');
-        if (logs.length === 0) return;
-
-        container.innerHTML = logs.map(log => `
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                    <p class="text-sm font-medium text-gray-900">Mood: ${log.mood || 'N/A'}</p>
-                    <p class="text-xs text-gray-500">${new Date(log.created_at).toLocaleDateString()}</p>
-                </div>
-                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">${log.energy_level || 'N/A'}/10</span>
-            </div>
-        `).join('');
-    }
+    lucide.createIcons();
 </script>
 {% endblock %}

@@ -374,29 +374,104 @@ input[type="range"]::-moz-range-thumb:hover {
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
 }
 
-/* Stat Cards */
+/* Dashboard Wellness Theme */
+body {
+  background-color: #F5F7FA;
+}
+
+.dashboard-main {
+  background-color: #F5F7FA;
+}
+
+.welcome-heading {
+  background: linear-gradient(to right, #00BFA5, #4DD0E1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
 .stat-card {
-    background: white;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  text-align: center;
+  border: 1px solid #E5E7EB;
+  transition: all 0.3s ease;
+  height: 100%;
 }
 
 .stat-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 191, 165, 0.15);
 }
 
-.stat-number {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0.5rem 0;
+.stat-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
 }
 
-.stat-label {
-    color: #6b7280;
-    font-size: 0.875rem;
-    font-weight: 500;
+.mood-circle {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 22; /* 78% */
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.chat-preview {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 1rem 1.5rem;
+  border-radius: 24px;
+  margin-bottom: 1rem;
+}
+
+.user-bubble {
+  background: #F3F4F6;
+  margin-left: auto;
+  border-bottom-right-radius: 8px;
+}
+
+.ai-bubble {
+  background: linear-gradient(to right, #00BFA5, #4DD0E1);
+  color: white;
+  border-bottom-left-radius: 8px;
+}
+
+.bottom-bar {
+  backdrop-filter: blur(20px);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.emergency-btn {
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+  transition: all 0.3s ease;
+}
+
+.emergency-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(239, 68, 68, 0.5);
+}
+
+.chart-circle {
+  transform: rotate(-90deg);
+}
+
+@media (max-width: 768px) {
+  .bottom-bar {
+    left: 0 !important;
+  }
 }

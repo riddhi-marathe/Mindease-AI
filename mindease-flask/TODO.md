@@ -1,35 +1,22 @@
-# MindEase Fix & Professionalize TODO
+# Dashboard UI Refactor Plan
 
-## Current Status
-- Plan approved by user
-- Working from CWD: mindease-flask/
+**Information Gathered:**
+- base.html: Sidebar structure with links (Dashboard active), Tailwind + lucide icons, main ml-64.
+- dashboard.html: Stats cards, recent activity, quick actions.
+- style.css: App utilities.
 
-## Steps (will update as completed)
+**Plan:**
+1. **base.html**: Update sidebar - circuit-brain logo + MINDEASE AI, links: Home, Dashboard (active teal), Chat, Tracker, Screenings, Resources, Profile w/ minimalist icons.
+2. **dashboard.html**: Welcome "Good morning, Alex", 4 stats cards (Mood Score 78/100 circle, Daily Streak 5 flame, Screenings 12 check, Daily Mood donut), Chat Preview (user/AI bubbles), Bottom bar (input, Send teal, Emergency coral).
+3. **style.css**: Add dashboard styles (#F5F7FA bg, #00BFA5 teal, 24px rounds, charts SVG/CSS).
 
-### 1. Diagnostics [COMPLETE]
-- [x] Created TODO.md
-- [x] Run `python test.py`: 5/5 PASS (imports, app, DB, routes, services ✓)
-- [x] Requirements updated & .env.example
+**Dependent Files:** base.html, dashboard.html, style.css
 
+**Breakdown Steps:**
+1. [ ] Update base.html sidebar (logo, links w/ icons, active teal).
+2. [ ] Refactor dashboard.html (welcome, stats grid, chat preview, bottom bar).
+3. [ ] Add styles to style.css (palette, rounds, charts).
+4. [ ] Test.
 
-### 2. Security Fixes
-- [ ] Update requirements.txt (add werkzeug.security)
-- [ ] Create .env.example
-- [ ] Fix password hashing in models/main.py (generate_password_hash/check_password_hash)
-
-### 3. Code Quality
-- [ ] Add logging config to app/__init__.py
-- [ ] Replace bare except in main.py with specific + log
-- [ ] Add input validation (required fields, types)
-- [ ] Install black/flake8 & format/lint
-
-### 4. Professional Polish
-- [ ] Update README.md with setup
-- [ ] Fix any test failures
-- [ ] Demo run python run.py
-
-### 5. Completion
-- [ ] attempt_completion with results
-
-**Next: Fix cmd to run test.py, then requirements.**
+Proceeding step-by-step.
 

@@ -3,267 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindEase - AI Health & Wellness</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <title>MindEase - Your AI Health Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
+    <meta name="description" content="MindEase - Premium AI-powered health companion for personalized wellness insights, symptom analysis, and mental health support.">
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    
+<body>
     <!-- Navigation -->
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <svg class="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                </svg>
-                <h1 class="text-2xl font-bold text-gray-800">MindEase</h1>
-            </div>
-            <div class="hidden md:flex space-x-6">
-                <a href="#home" class="text-gray-700 hover:text-blue-600 transition">Home</a>
-                <a href="#features" class="text-gray-700 hover:text-blue-600 transition">Features</a>
-                <a href="#about" class="text-gray-700 hover:text-blue-600 transition">About</a>
-                <button id="loginBtn" onclick="window.location.href='/login'" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Get Started</button>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <svg class="loading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="16" height="10" rx="2"></rect>
+            <line x1="12" y1="4" x2="12" y2="7"></line>
+            <line x1="12" y2="17" x2="12" y3="20"></line>
+        </svg>
+        <div class="loading-text">Initializing MindEase AI...</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    MindEase
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="/login" class="cta-button">Get Started</a></li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="max-w-7xl mx-auto px-4 py-20" data-aos="fade-up">
-        <div class="grid md:grid-cols-2 gap-10 items-center">
-            <div data-aos="fade-right">
-                <h1 class="text-5xl font-bold text-gray-900 mb-4">Your AI Health Companion</h1>
-                <p class="text-xl text-gray-600 mb-8">Get personalized health insights, wellness recommendations, and mental health support powered by AI.</p>
-                <div class="flex space-x-4">
-                    <button onclick="window.location.href='/login'" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition transform hover:scale-105">Get Started</button>
-                    <button onclick="scrollToSection('features')" class="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">Learn More</button>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-lg p-8" data-aos="fade-left">
-                <div class="space-y-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span class="text-blue-600 font-bold">✓</span>
-                        </div>
-                        <p class="text-gray-700">AI-Powered Symptom Analysis</p>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <span class="text-green-600 font-bold">✓</span>
-                        </div>
-                        <p class="text-gray-700">Personalized Wellness Plans</p>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                            <span class="text-purple-600 font-bold">✓</span>
-                        </div>
-                        <p class="text-gray-700">Mental Health Support</p>
-                    </div>
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content fade-up">
+                <h1>Your AI Health Companion</h1>
+                <p>Premium AI-powered platform delivering personalized health insights, symptom analysis, wellness recommendations, and mental health support. Designed for modern health-tech excellence.</p>
+                <div class="hero-buttons">
+                    <button class="primary-btn" onclick="window.location.href='/login'">Get Started Free</button>
+                    <button class="secondary-btn" onclick="scrollToSection('features')">Learn More</button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="bg-white py-20 px-4" data-aos="fade-up">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl font-bold text-center text-gray-900 mb-12" data-aos="fade-up">Our Features</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 text-center hover:shadow-lg transition transform hover:scale-105" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white text-2xl">🔍</span>
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title fade-up">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-up">
+                    <div class="feature-icon">
+                        <svg fill="currentColor" viewBox="0 0 24 24" width="36" height="36">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Symptom Check</h3>
-                    <p class="text-gray-700">AI-powered symptom analysis to help you understand potential health concerns.</p>
+                    <h3>Symptom Analysis</h3>
+                    <p>AI-powered symptom checker provides instant, accurate health insights using advanced medical knowledge bases.</p>
                 </div>
-
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 text-center hover:shadow-lg transition transform hover:scale-105" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white text-2xl">💚</span>
+                <div class="feature-card fade-up" style="animation-delay: 0.2s">
+                    <div class="feature-icon">
+                        <svg fill="currentColor" viewBox="0 0 24 24" width="36" height="36">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Wellness Check</h3>
-                    <p class="text-gray-700">Personalized wellness recommendations based on your lifestyle and health data.</p>
+                    <h3>Wellness Tracking</h3>
+                    <p>Comprehensive health monitoring with personalized wellness plans and progress tracking over time.</p>
                 </div>
-
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 text-center hover:shadow-lg transition transform hover:scale-105" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white text-2xl">🧠</span>
+                <div class="feature-card fade-up" style="animation-delay: 0.4s">
+                    <div class="feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="36" height="36">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Mental Health</h3>
-                    <p class="text-gray-700">AI-powered mental health support and coping strategies.</p>
+                    <h3>Mental Health</h3>
+                    <p>24/7 AI mental health support, mood tracking, and personalized coping strategies for emotional well-being.</p>
                 </div>
-
-                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-6 text-center hover:shadow-lg transition transform hover:scale-105" data-aos="fade-up" data-aos-delay="400">
-                    <div class="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white text-2xl">📊</span>
+                <div class="feature-card fade-up" style="animation-delay: 0.6s">
+                    <div class="feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="36" height="36">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Health Screening</h3>
-                    <p class="text-gray-700">Comprehensive health screening to assess your overall well-being.</p>
+                    <h3>Health Screening</h3>
+                    <p>Comprehensive screening tools for early detection and preventive health assessments.</p>
                 </div>
-
-                <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-lg p-6 text-center hover:shadow-lg transition transform hover:scale-105" data-aos="fade-up" data-aos-delay="500">
-                    <div class="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white text-2xl">📈</span>
+                <div class="feature-card fade-up" style="animation-delay: 0.8s">
+                    <div class="feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="36" height="36">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Health Tracker</h3>
-                    <p class="text-gray-700">Track your vital signs, metrics, and health trends over time.</p>
+                    <h3>AI Chat</h3>
+                    <p>Instant AI conversations for quick health advice, questions, and personalized recommendations.</p>
                 </div>
-
-                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-6 text-center hover:shadow-lg transition transform hover:scale-105" data-aos="fade-up" data-aos-delay="600">
-                    <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-white text-2xl">💬</span>
+                <div class="feature-card fade-up" style="animation-delay: 1s">
+                    <div class="feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="36" height="36">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">AI Chat</h3>
-                    <p class="text-gray-700">Chat with our AI assistant for instant health advice and support.</p>
+                    <h3>Tracker</h3>
+                    <p>Advanced health metrics tracking with insightful analytics and trend visualizations.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Testimonials Section -->
-    <section class="py-20 px-4 bg-gradient-to-r from-blue-50 to-indigo-50" data-aos="fade-up">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl font-bold text-center text-gray-900 mb-12" data-aos="fade-up">What Our Users Say</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-lg p-6 shadow-lg" data-aos="fade-up" data-aos-delay="100">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span class="text-blue-600 font-bold">S</span>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-semibold text-gray-900">Sarah Johnson</h4>
-                            <p class="text-gray-600 text-sm">Health Enthusiast</p>
+    <section id="testimonials" class="section" style="background: var(--secondary);">
+        <div class="container">
+            <h2 class="section-title fade-up">Trusted by Thousands</h2>
+            <div class="testimonials-grid fade-up">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar">SJ</div>
+                        <div>
+                            <h4>Sarah Johnson</h4>
+                            <p>Health Professional</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 italic">"MindEase helped me understand my symptoms better and provided valuable insights for my wellness journey."</p>
-                    <div class="flex text-yellow-400 mt-4">
-                        ★★★★★
-                    </div>
+                    <div class="testimonial-text">"MindEase transformed how I approach my wellness journey. The AI insights are spot-on and incredibly actionable."</div>
+                    <div class="stars">★★★★★</div>
                 </div>
-
-                <div class="bg-white rounded-lg p-6 shadow-lg" data-aos="fade-up" data-aos-delay="200">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <span class="text-green-600 font-bold">M</span>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-semibold text-gray-900">Michael Chen</h4>
-                            <p class="text-gray-600 text-sm">Fitness Trainer</p>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar" style="background: linear-gradient(135deg, #10B981, #059669);">MC</div>
+                        <div>
+                            <h4>Michael Chen</h4>
+                            <p>Fitness Coach</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 italic">"The AI chat feature is incredibly helpful for quick health advice. Highly recommend!"</p>
-                    <div class="flex text-yellow-400 mt-4">
-                        ★★★★★
-                    </div>
+                    <div class="testimonial-text">"The symptom analysis and chat features have been game-changers for my clients' health monitoring."</div>
+                    <div class="stars">★★★★★</div>
                 </div>
-
-                <div class="bg-white rounded-lg p-6 shadow-lg" data-aos="fade-up" data-aos-delay="300">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                            <span class="text-purple-600 font-bold">E</span>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-semibold text-gray-900">Emily Davis</h4>
-                            <p class="text-gray-600 text-sm">Mental Health Advocate</p>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">ED</div>
+                        <div>
+                            <h4>Emily Davis</h4>
+                            <p>Wellness Advocate</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 italic">"The mental health support tools have been a game-changer for my daily wellness routine."</p>
-                    <div class="flex text-yellow-400 mt-4">
-                        ★★★★★
-                    </div>
+                    <div class="testimonial-text">"Perfect blend of technology and empathy. The mental health tools genuinely care about your well-being."</div>
+                    <div class="stars">★★★★★</div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-20 px-4">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
+    <section id="about" class="section">
+        <div class="container">
+            <div class="about-grid fade-up">
                 <div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-6">About MindEase</h2>
-                    <p class="text-xl text-gray-600 mb-6">MindEase is your AI-powered health companion, designed to provide personalized health insights, wellness recommendations, and mental health support.</p>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                <span class="text-blue-600">✓</span>
-                            </div>
-                            <p class="text-gray-700">Advanced AI technology for accurate health analysis</p>
+                    <h2 style="font-size: 3.5rem; font-weight: 800; margin-bottom: 2rem; line-height: 1.1;">Medical-grade AI for Everyday Health</h2>
+                    <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 3rem; line-height: 1.8;">MindEase combines cutting-edge AI with medical expertise to deliver Linear-like precision and Calm-like serenity in health management.</p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <div class="about-icon">🩺</div>
+                            <span>Clinically-informed AI models</span>
                         </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                <span class="text-green-600">✓</span>
-                            </div>
-                            <p class="text-gray-700">Comprehensive wellness tracking and monitoring</p>
+                        <div class="about-feature">
+                            <div class="about-icon">🔒</div>
+                            <span>Privacy-first architecture</span>
                         </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                <span class="text-purple-600">✓</span>
-                            </div>
-                            <p class="text-gray-700">24/7 mental health support and resources</p>
+                        <div class="about-feature">
+                            <div class="about-icon">⚡</div>
+                            <span>Real-time insights</span>
                         </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                                <span class="text-orange-600">✓</span>
-                            </div>
-                            <p class="text-gray-700">Privacy-focused with secure data handling</p>
+                        <div class="about-feature">
+                            <div class="about-icon">📱</div>
+                            <span>Mobile-optimized experience</span>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-8">
-                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Why Choose MindEase?</h3>
-                    <div class="space-y-4 text-gray-700">
-                        <p>Our AI algorithms are trained on extensive medical knowledge and continuously updated with the latest health research.</p>
-                        <p>We prioritize your privacy and security, ensuring all your health data remains confidential and secure.</p>
-                        <p>Get personalized recommendations tailored to your unique health profile and lifestyle.</p>
-                        <p>Access professional-grade health tools and insights from the comfort of your home.</p>
-                    </div>
-                    <button onclick="window.location.href='/login'" class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Start Your Health Journey</button>
+                <div class="feature-card" style="background: linear-gradient(135deg, var(--secondary), #D1FAE5); border: none;">
+                    <h3 style="font-size: 2rem; margin-bottom: 1.5rem;">Ready to transform your health?</h3>
+                    <p>Join thousands who trust MindEase for their daily wellness. Start your free journey today.</p>
+                    <button class="primary-btn" style="width: 100%; margin-top: 1.5rem;" onclick="window.location.href='/login'">Start Free Trial</button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-8 px-4">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid md:grid-cols-3 gap-8 mb-8">
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">MindEase</h3>
-                    <p class="text-gray-400">AI-powered health and wellness companion</p>
+                    <div class="logo" style="color: white; -webkit-text-fill-color: white; font-size: 1.75rem; margin-bottom: 1rem;">
+                        MindEase
+                    </div>
+                    <p style="color: rgba(255,255,255,0.8); line-height: 1.7;">Premium AI health companion trusted by wellness professionals worldwide.</p>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Features</h3>
-                    <ul class="text-gray-400 space-y-2">
-                        <li><a href="#" class="hover:text-white transition">Symptom Checker</a></li>
-                        <li><a href="#" class="hover:text-white transition">Wellness Tracking</a></li>
-                        <li><a href="#" class="hover:text-white transition">Mental Health Support</a></li>
-                    </ul>
+                    <h3>Product</h3>
+                    <a href="#features">Features</a>
+                    <a href="/login">Get Started</a>
+                    <a href="/login">Pricing</a>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Legal</h3>
-                    <ul class="text-gray-400 space-y-2">
-                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
-                        <li><a href="#" class="hover:text-white transition">Contact</a></li>
-                    </ul>
+                    <h3>Company</h3>
+                    <a href="#about">About</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div>
+                    <h3>Legal</h3>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Disclaimer</a>
                 </div>
             </div>
-            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
-                <p>&copy; 2026 MindEase. All rights reserved. Disclaimer: This app is for informational purposes only, not medical advice.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MindEase AI. All rights reserved. | Not medical advice - consult healthcare professionals.</p>
             </div>
         </div>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({
-            duration: 800,
-            once: true
-        });
+    </footer>
 
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+    <script>
+        // Loading screen fade out after 1.5s
+        setTimeout(() => {
+            const loading = document.getElementById('loadingScreen');
+            loading.classList.add('fade-out');
+            setTimeout(() => loading.remove(), 500);
+        }, 1500);
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
         }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-up').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.8s cubic-bezier(0.4,0,0.2,1)';
+            observer.observe(el);
+        });
     </script>
 </body>
 </html>
+
