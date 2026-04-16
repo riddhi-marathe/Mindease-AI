@@ -3,512 +3,434 @@
 {% block title %}Dashboard - MindEase{% endblock %}
 {% block page_title %}Mental Wellness Dashboard{% endblock %}
 
-{% block content %}
+{% block head %}
 <style>
-    :root {
-        --bg-light: #F5F7FA;
-        --accent-primary: #00BFA5;
-        --accent-light: rgba(0, 191, 165, 0.1);
-        --text-primary: #334155;
-        --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        --card-border: 1px solid rgba(255, 255, 255, 0.3);
-        --border-radius: 24px;
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --spacing-lg: 32px;
-        --spacing-md: 16px;
-        --spacing-sm: 8px;
+    .hero-mesh {
+        background:
+            radial-gradient(circle at top left, rgba(45, 212, 191, 0.24), transparent 36%),
+            radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), transparent 32%),
+            linear-gradient(135deg, #0f172a 0%, #111827 58%, #1e293b 100%);
     }
 
-    body.dark-mode {
-        --bg-light: #1a1a1a;
-        --text-primary: #E2E8F0;
+    .surface-card {
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 24px 60px -30px rgba(15, 23, 42, 0.22);
     }
 
-    .dashboard-container {
-        padding: var(--spacing-lg);
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--spacing-lg);
-        padding-bottom: var(--spacing-lg);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .dashboard-title {
-        font-size: 32px;
-        font-weight: 700;
-        letter-spacing: -1px;
-    }
-
-    .dashboard-actions {
-        display: flex;
-        gap: var(--spacing-md);
-    }
-
-    .dashboard-btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 12px;
-        background-color: rgba(0, 0, 0, 0.04);
-        color: var(--text-primary);
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        transition: var(--transition);
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .dashboard-btn:hover {
-        background-color: var(--accent-light);
-        color: var(--accent-primary);
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: var(--spacing-lg);
-        margin-bottom: var(--spacing-lg);
-    }
-
-    .stat-card {
-        background-color: #FFFFFF;
-        border: var(--card-border);
-        border-radius: var(--border-radius);
-        padding: var(--spacing-lg);
-        box-shadow: var(--card-shadow);
-        transition: var(--transition);
-        overflow: hidden;
+    .metric-card {
         position: relative;
+        overflow: hidden;
     }
 
-    body.dark-mode .stat-card {
-        background-color: #2d2d2d;
-        border-color: rgba(255, 255, 255, 0.1);
+    .metric-card::after {
+        content: "";
+        position: absolute;
+        right: -2rem;
+        bottom: -2rem;
+        width: 7rem;
+        height: 7rem;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(45, 212, 191, 0.18), transparent 68%);
+        pointer-events: none;
     }
 
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+    .energy-track {
+        background: linear-gradient(180deg, rgba(45, 212, 191, 0.12), rgba(148, 163, 184, 0.08));
     }
 
-    .stat-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--spacing-md);
-    }
-
-    .stat-card-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: rgba(51, 65, 85, 0.6);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    body.dark-mode .stat-card-title {
-        color: rgba(226, 232, 240, 0.6);
-    }
-
-    .stat-card-content {
-        text-align: center;
-    }
-
-    .stat-card-value {
-        font-size: 32px;
-        font-weight: 700;
-        color: var(--accent-primary);
-        line-height: 1;
-    }
-
-    .stat-card-label {
-        font-size: 12px;
-        color: rgba(51, 65, 85, 0.6);
-        margin-top: var(--spacing-sm);
-    }
-
-    body.dark-mode .stat-card-label {
-        color: rgba(226, 232, 240, 0.6);
-    }
-
-    .section-title {
-        font-size: 20px;
-        font-weight: 700;
-        margin-bottom: var(--spacing-md);
-        margin-top: var(--spacing-lg);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
-    }
-
-    .chat-container {
-        background-color: #FFFFFF;
-        border: var(--card-border);
-        border-radius: var(--border-radius);
-        padding: var(--spacing-lg);
-        box-shadow: var(--card-shadow);
-        display: flex;
-        flex-direction: column;
-        height: 400px;
-        margin-bottom: var(--spacing-lg);
-    }
-
-    body.dark-mode .chat-container {
-        background-color: #2d2d2d;
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .chat-messages {
-        flex: 1;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-md);
-        padding-bottom: var(--spacing-md);
-        margin-bottom: var(--spacing-md);
-    }
-
-    .message {
-        display: flex;
-        gap: var(--spacing-md);
-        animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .message.user {
-        justify-content: flex-end;
-    }
-
-    .message-content {
-        max-width: 70%;
-        padding: 12px 16px;
-        border-radius: 16px;
-        font-size: 14px;
-        line-height: 1.5;
-        word-wrap: break-word;
-    }
-
-    .message.user .message-content {
-        background-color: rgba(51, 65, 85, 0.1);
-        color: var(--text-primary);
-        border-radius: 16px 4px 16px 16px;
-    }
-
-    body.dark-mode .message.user .message-content {
-        background-color: rgba(226, 232, 240, 0.1);
-    }
-
-    .message.ai .message-content {
-        background-color: var(--accent-primary);
-        color: white;
-        border-radius: 4px 16px 16px 16px;
-        font-weight: 500;
-    }
-
-    .chat-input-wrapper {
-        display: flex;
-        gap: var(--spacing-sm);
-    }
-
-    .chat-input {
-        flex: 1;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-        padding: 12px 16px;
-        font-size: 14px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        transition: var(--transition);
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-
-    body.dark-mode .chat-input {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.1);
-        color: var(--text-primary);
-    }
-
-    .chat-input:focus {
-        outline: none;
-        border-color: var(--accent-primary);
-        box-shadow: 0 0 0 3px var(--accent-light);
-    }
-
-    .chat-send-btn {
-        width: 44px;
-        height: 44px;
-        border: none;
-        border-radius: 12px;
-        background-color: var(--accent-primary);
-        color: white;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        transition: var(--transition);
-    }
-
-    .chat-send-btn:hover {
-        background-color: #00897B;
-        transform: scale(1.05);
-    }
-
-    .charts-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: var(--spacing-lg);
-        margin-bottom: var(--spacing-lg);
-    }
-
-    .chart-card {
-        background-color: #FFFFFF;
-        border: var(--card-border);
-        border-radius: var(--border-radius);
-        padding: var(--spacing-lg);
-        box-shadow: var(--card-shadow);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: var(--transition);
-    }
-
-    body.dark-mode .chart-card {
-        background-color: #2d2d2d;
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .chart-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
-    }
-
-    .chart-title {
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: var(--spacing-md);
-        width: 100%;
-        text-align: left;
-    }
-
-    @media (max-width: 768px) {
-        .dashboard-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .dashboard-actions {
-            margin-top: var(--spacing-md);
-            width: 100%;
-        }
-
-        .dashboard-title {
-            font-size: 24px;
-        }
-
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .charts-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .stats-grid {
-            grid-template-columns: 1fr;
-            gap: var(--spacing-md);
-        }
-
-        .dashboard-title {
-            font-size: 20px;
-        }
+    .energy-bar {
+        transition: height 0.25s ease;
     }
 </style>
+{% endblock %}
 
-<div class="dashboard-container">
-    <!-- HEADER -->
-    <div class="dashboard-header">
-        <h1 class="dashboard-title">Welcome Back 👋</h1>
-        <div class="dashboard-actions">
-            <button class="dashboard-btn">📥 Export Report</button>
-            <button class="dashboard-btn">⚙️ Settings</button>
-        </div>
-    </div>
+{% block content %}
+<div id="dashboardPage" class="space-y-6">
+    <section class="overflow-hidden rounded-[2rem] text-white surface-card">
+        <div class="hero-mesh grid gap-8 px-6 py-8 lg:grid-cols-[1.6fr,1fr] lg:px-8">
+            <div>
+                <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">
+                    <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
+                    {% if dashboard.is_guest %}Preview mode{% else %}Personal dashboard{% endif %}
+                </span>
 
-    <!-- STATS GRID -->
-    <div class="stats-grid">
-        <!-- Mood Card -->
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <span class="stat-card-title">Mood Score</span>
-                <div style="font-size: 20px;">😊</div>
+                <h3 class="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">
+                    {% if dashboard.is_guest %}
+                        Your wellness workspace is ready.
+                    {% else %}
+                        Welcome back, {{ dashboard.display_name }}.
+                    {% endif %}
+                </h3>
+
+                <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                    {% if dashboard.is_guest %}
+                        Explore the dashboard layout, open the tools, and sign in when you want to save assessments, check-ins, and progress over time.
+                    {% else %}
+                        This dashboard now reflects your recent activity, weekly check-ins, and core wellness signals so you can act on trends instead of static placeholders.
+                    {% endif %}
+                </p>
+
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <a href="{{ url_for('main.wellness_check_page') }}" class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
+                        <i data-lucide="heart" class="h-4 w-4"></i>
+                        <span>Start wellness check</span>
+                    </a>
+                    <a href="{{ url_for('main.chat_page') }}" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15">
+                        <i data-lucide="message-circle" class="h-4 w-4"></i>
+                        <span>Open AI chat</span>
+                    </a>
+                    {% if dashboard.is_guest %}
+                        <a href="{{ url_for('main.login_page') }}" class="inline-flex items-center gap-2 rounded-full border border-teal-300/40 bg-teal-400/10 px-5 py-3 text-sm font-semibold text-teal-100 transition hover:bg-teal-400/15">
+                            <i data-lucide="log-in" class="h-4 w-4"></i>
+                            <span>Login to save history</span>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
-            <div class="stat-card-content">
-                <svg style="width: 120px; height: 120px;" viewBox="0 0 120 120" aria-label="Mood score: 78 out of 100">
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0, 0, 0, 0.1)" stroke-width="4"/>
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="#00BFA5" stroke-width="4"
-                        stroke-dasharray="267.84 282.6" stroke-dashoffset="0"
-                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
-                    <text x="60" y="65" text-anchor="middle" font-size="24" font-weight="bold" fill="#00BFA5">78</text>
-                </svg>
-                <p class="stat-card-label">Out of 100</p>
+
+            <div class="rounded-[1.75rem] border border-white/10 bg-white/10 p-5 backdrop-blur">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">This week at a glance</p>
+                <div class="mt-5 space-y-3">
+                    <div class="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3">
+                        <span class="text-sm text-slate-300">Check-ins</span>
+                        <span class="text-lg font-semibold text-white">{{ dashboard.summary.weekly_checkins }}</span>
+                    </div>
+                    <div class="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3">
+                        <span class="text-sm text-slate-300">Assessments saved</span>
+                        <span class="text-lg font-semibold text-white">{{ dashboard.summary.assessments }}</span>
+                    </div>
+                    <div class="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3">
+                        <span class="text-sm text-slate-300">Metrics tracked</span>
+                        <span class="text-lg font-semibold text-white">{{ dashboard.summary.metrics }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex flex-wrap gap-2">
+                    {% for highlight in dashboard.highlights %}
+                        <span class="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-slate-100">{{ highlight }}</span>
+                    {% endfor %}
+                </div>
             </div>
+        </div>
+    </section>
+
+    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <article class="metric-card rounded-[1.75rem] bg-white p-5 surface-card">
+            <div class="flex items-center justify-between">
+                <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-50 text-teal-700">
+                    <i data-lucide="clipboard-check" class="h-5 w-5"></i>
+                </span>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500">history</span>
+            </div>
+            <p class="mt-5 text-sm font-medium text-slate-500">Saved assessments</p>
+            <p class="mt-2 text-3xl font-semibold text-slate-900">{{ dashboard.summary.assessments }}</p>
+            <p class="mt-2 text-sm text-slate-500">Wellness, symptom, and screening results stored in one place.</p>
+        </article>
+
+        <article class="metric-card rounded-[1.75rem] bg-white p-5 surface-card">
+            <div class="flex items-center justify-between">
+                <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
+                    <i data-lucide="flame" class="h-5 w-5"></i>
+                </span>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500">consistency</span>
+            </div>
+            <p class="mt-5 text-sm font-medium text-slate-500">Current streak</p>
+            <p class="mt-2 text-3xl font-semibold text-slate-900">{{ dashboard.summary.streak }}</p>
+            <p class="mt-2 text-sm text-slate-500">
+                {% if dashboard.summary.streak %}
+                    Consecutive day{% if dashboard.summary.streak != 1 %}s{% endif %} with at least one saved check-in.
+                {% else %}
+                    Log a wellness entry today to start a new streak.
+                {% endif %}
+            </p>
+        </article>
+
+        <article class="metric-card rounded-[1.75rem] bg-white p-5 surface-card">
+            <div class="flex items-center justify-between">
+                <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
+                    <i data-lucide="moon" class="h-5 w-5"></i>
+                </span>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500">recovery</span>
+            </div>
+            <p class="mt-5 text-sm font-medium text-slate-500">Average sleep</p>
+            <p class="mt-2 text-3xl font-semibold text-slate-900">
+                {% if dashboard.summary.avg_sleep is not none %}
+                    {{ "%.1f"|format(dashboard.summary.avg_sleep) }}h
+                {% else %}
+                    --
+                {% endif %}
+            </p>
+            <p class="mt-2 text-sm text-slate-500">{{ dashboard.sleep_message }}</p>
+        </article>
+
+        <article class="metric-card rounded-[1.75rem] bg-white p-5 surface-card">
+            <div class="flex items-center justify-between">
+                <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                    <i data-lucide="activity" class="h-5 w-5"></i>
+                </span>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500">overview</span>
+            </div>
+            <p class="mt-5 text-sm font-medium text-slate-500">Wellness score</p>
+            <p class="mt-2 text-3xl font-semibold text-slate-900">
+                {% if dashboard.summary.wellness_score is not none %}
+                    {{ dashboard.summary.wellness_score }}%
+                {% else %}
+                    --
+                {% endif %}
+            </p>
+            <p class="mt-2 text-sm text-slate-500">
+                {% if dashboard.summary.wellness_score is not none %}
+                    A blended signal from your sleep, energy, and stress logs.
+                {% else %}
+                    Add a few check-ins and this score will start filling in.
+                {% endif %}
+            </p>
+        </article>
+    </section>
+
+    <section class="grid gap-6 xl:grid-cols-[1.4fr,1fr]">
+        <article class="rounded-[1.75rem] bg-white p-6 surface-card">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Recent activity</p>
+                    <h4 class="mt-2 text-2xl font-semibold text-slate-900">What changed lately</h4>
+                </div>
+                <a href="{{ url_for('main.profile_page') }}" class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200">
+                    <i data-lucide="user" class="h-4 w-4"></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+
+            <div class="mt-6 space-y-3">
+                {% for item in dashboard.activity_feed %}
+                    <div class="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
+                        <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-teal-700 shadow-sm">
+                            <i data-lucide="{{ item.icon }}" class="h-5 w-5"></i>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <p class="font-medium text-slate-900">{{ item.title }}</p>
+                                <span class="text-xs font-medium uppercase tracking-wide text-slate-400">{{ item.time_label }}</span>
+                            </div>
+                            <p class="mt-1 text-sm text-slate-500">{{ item.detail }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-5 py-10 text-center">
+                        <span class="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-teal-700 shadow-sm">
+                            <i data-lucide="inbox" class="h-6 w-6"></i>
+                        </span>
+                        <h5 class="mt-4 text-lg font-semibold text-slate-900">No saved activity yet</h5>
+                        <p class="mt-2 text-sm text-slate-500">The dashboard will start filling with recent check-ins, assessments, and metrics as soon as you use the tools.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="rounded-[1.75rem] bg-white p-6 surface-card">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Trend snapshot</p>
+            <h4 class="mt-2 text-2xl font-semibold text-slate-900">Signals worth noticing</h4>
+
+            <div class="mt-6 grid gap-4">
+                <div class="rounded-2xl bg-slate-50 p-4">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                            <i data-lucide="battery-charging" class="h-5 w-5"></i>
+                        </span>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-900">Energy trend</p>
+                            <p class="text-sm text-slate-500">{{ dashboard.trend_message }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-slate-50 p-4">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                            <i data-lucide="moon" class="h-5 w-5"></i>
+                        </span>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-900">Sleep rhythm</p>
+                            <p class="text-sm text-slate-500">{{ dashboard.sleep_message }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-slate-50 p-4">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-100 text-rose-700">
+                            <i data-lucide="wind" class="h-5 w-5"></i>
+                        </span>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-900">Stress load</p>
+                            <p class="text-sm text-slate-500">{{ dashboard.stress_message }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-slate-900 p-5 text-white">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-teal-200">Most recent insight</p>
+                    {% if dashboard.latest_assessment %}
+                        <h5 class="mt-3 text-lg font-semibold">{{ dashboard.latest_assessment.title }}</h5>
+                        <p class="mt-2 text-sm text-slate-300">{{ dashboard.latest_assessment.result }}</p>
+                        <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-200">
+                            <span class="rounded-full bg-white/10 px-3 py-1">Urgency: {{ dashboard.latest_assessment.urgency }}</span>
+                            <span class="rounded-full bg-white/10 px-3 py-1">{{ dashboard.latest_assessment.created_label }}</span>
+                        </div>
+                    {% else %}
+                        <h5 class="mt-3 text-lg font-semibold">No recent assessment yet</h5>
+                        <p class="mt-2 text-sm text-slate-300">Run one of the health tools and the latest result will appear here.</p>
+                    {% endif %}
+
+                    <div class="mt-5 border-t border-white/10 pt-4">
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Dominant mood</p>
+                        <p class="mt-2 text-sm text-slate-200">{{ dashboard.dominant_mood or 'Not enough check-ins yet' }}</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="grid gap-6 xl:grid-cols-[1.3fr,1fr]">
+        <article class="rounded-[1.75rem] bg-white p-6 surface-card">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Weekly energy</p>
+                    <h4 class="mt-2 text-2xl font-semibold text-slate-900">Seven day check-in view</h4>
+                </div>
+                <span class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">Scale: 0 to 10</span>
+            </div>
+
+            <div class="mt-8 grid grid-cols-7 gap-3">
+                {% for day in dashboard.weekly_energy %}
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="energy-track flex h-36 w-full items-end justify-center rounded-[1.5rem] p-3">
+                            <div
+                                class="energy-bar w-full rounded-[1rem] {{ 'bg-gradient-to-t from-teal-500 to-cyan-400' if day.has_entry else 'bg-slate-200' }}"
+                                style="height: {{ day.height }}px;"
+                                title="{{ day.mood }}"
+                            ></div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-medium text-slate-900">{{ day.label }}</p>
+                            <p class="text-xs text-slate-500">
+                                {% if day.has_entry %}
+                                    {{ day.value }}/10
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <p class="mt-6 text-sm text-slate-500">Each column reflects the most recent energy score saved for that day. Empty days stay visible so gaps are easy to spot.</p>
+        </article>
+
+        <article class="rounded-[1.75rem] bg-white p-6 surface-card">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Next best steps</p>
+            <h4 class="mt-2 text-2xl font-semibold text-slate-900">Keep the dashboard useful</h4>
+
+            <div class="mt-6 space-y-3">
+                {% for item in dashboard.focus_items %}
+                    <div class="flex items-start gap-3 rounded-2xl bg-slate-50 px-4 py-4">
+                        <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 text-teal-700">
+                            <i data-lucide="check" class="h-4 w-4"></i>
+                        </span>
+                        <p class="text-sm leading-6 text-slate-600">{{ item }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-6 rounded-[1.5rem] border border-teal-100 bg-gradient-to-br from-teal-50 to-cyan-50 p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Need a quick reset?</p>
+                <h5 class="mt-2 text-lg font-semibold text-slate-900">Use the wellness check for a short self-reflection.</h5>
+                <p class="mt-2 text-sm text-slate-600">It is the fastest way to create fresh dashboard data and get a useful recommendation immediately.</p>
+                <a href="{{ url_for('main.wellness_check_page') }}" class="mt-4 inline-flex items-center gap-2 rounded-full bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-700">
+                    <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    <span>Open wellness check</span>
+                </a>
+            </div>
+        </article>
+    </section>
+
+    <section class="rounded-[1.75rem] bg-white p-6 surface-card">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Quick actions</p>
+                <h4 class="mt-2 text-2xl font-semibold text-slate-900">Move straight into the tools</h4>
+            </div>
+            <p class="max-w-2xl text-sm text-slate-500">Everything below is wired to the live Flask routes, so the dashboard is now a real launch point instead of a static mockup.</p>
         </div>
 
-        <!-- Streak Card -->
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <span class="stat-card-title">Daily Streak</span>
-                <div style="font-size: 20px;">🔥</div>
-            </div>
-            <div class="stat-card-content">
-                <div class="stat-card-value">5</div>
-                <p class="stat-card-label">Days Check-in</p>
-            </div>
-        </div>
+        <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <a href="{{ url_for('main.wellness_check_page') }}" class="group rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-teal-200 hover:bg-white">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                        <i data-lucide="heart" class="h-5 w-5"></i>
+                    </span>
+                    <i data-lucide="arrow-up-right" class="h-5 w-5 text-slate-400 transition group-hover:text-teal-600"></i>
+                </div>
+                <h5 class="mt-5 text-lg font-semibold text-slate-900">Wellness Check</h5>
+                <p class="mt-2 text-sm text-slate-500">Capture mood, sleep, and stress in a few minutes.</p>
+            </a>
 
-        <!-- Screenings Card -->
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <span class="stat-card-title">Screenings</span>
-                <div style="font-size: 20px;">✅</div>
-            </div>
-            <div class="stat-card-content">
-                <div class="stat-card-value">12</div>
-                <p class="stat-card-label">Completed</p>
-            </div>
-        </div>
+            <a href="{{ url_for('main.symptom_check_page') }}" class="group rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-teal-200 hover:bg-white">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                        <i data-lucide="stethoscope" class="h-5 w-5"></i>
+                    </span>
+                    <i data-lucide="arrow-up-right" class="h-5 w-5 text-slate-400 transition group-hover:text-teal-600"></i>
+                </div>
+                <h5 class="mt-5 text-lg font-semibold text-slate-900">Symptom Check</h5>
+                <p class="mt-2 text-sm text-slate-500">Run a quick symptom triage and save the result to history.</p>
+            </a>
 
-        <!-- Weekly Mood Card -->
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <span class="stat-card-title">This Week</span>
-                <div style="font-size: 20px;">📊</div>
-            </div>
-            <div class="stat-card-content">
-                <svg style="width: 140px; height: 140px;" viewBox="0 0 140 140" aria-label="Weekly mood distribution">
-                    <circle cx="70" cy="70" r="45" fill="none" stroke="#00BFA5" stroke-width="8" stroke-dasharray="70.65 139.23"/>
-                    <circle cx="70" cy="70" r="45" fill="none" stroke="#FFB400" stroke-width="8" stroke-dasharray="35.31 139.23" stroke-dashoffset="-70.65"/>
-                    <circle cx="70" cy="70" r="45" fill="none" stroke="#FF6B6B" stroke-width="8" stroke-dasharray="33.26 139.23" stroke-dashoffset="-105.96"/>
-                    <circle cx="70" cy="70" r="20" fill="white"/>
-                </svg>
-                <p class="stat-card-label">Balanced week</p>
-            </div>
-        </div>
-    </div>
+            <a href="{{ url_for('main.screening_page') }}" class="group rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-teal-200 hover:bg-white">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+                        <i data-lucide="clipboard-list" class="h-5 w-5"></i>
+                    </span>
+                    <i data-lucide="arrow-up-right" class="h-5 w-5 text-slate-400 transition group-hover:text-teal-600"></i>
+                </div>
+                <h5 class="mt-5 text-lg font-semibold text-slate-900">Screenings</h5>
+                <p class="mt-2 text-sm text-slate-500">Generate a broader health screening report when you need more context.</p>
+            </a>
 
-    <!-- CHAT PREVIEW -->
-    <h2 class="section-title">💬 Quick Chat with AI Support</h2>
-    <div class="chat-container">
-        <div class="chat-messages">
-            <div class="message ai">
-                <div class="message-content">Hello! I'm here to support your mental wellness journey. What's on your mind today?</div>
-            </div>
-            <div class="message user">
-                <div class="message-content">I'm feeling stressed about work deadlines.</div>
-            </div>
-            <div class="message ai">
-                <div class="message-content">That's a common concern. Let's explore stress management techniques. 🌿</div>
-            </div>
-        </div>
-        <div class="chat-input-wrapper">
-            <input type="text" class="chat-input" placeholder="Share your thoughts..." aria-label="Chat input">
-            <button class="chat-send-btn" aria-label="Send message">📤</button>
-        </div>
-    </div>
+            <a href="{{ url_for('main.tracker_page') }}" class="group rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-teal-200 hover:bg-white">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700">
+                        <i data-lucide="activity" class="h-5 w-5"></i>
+                    </span>
+                    <i data-lucide="arrow-up-right" class="h-5 w-5 text-slate-400 transition group-hover:text-teal-600"></i>
+                </div>
+                <h5 class="mt-5 text-lg font-semibold text-slate-900">Tracker</h5>
+                <p class="mt-2 text-sm text-slate-500">Log health metrics and build a longer running trendline.</p>
+            </a>
 
-    <!-- CHARTS SECTION -->
-    <h2 class="section-title">📈 Your Wellness Metrics (SDG 3: Good Health & Well-being)</h2>
-    <div class="charts-grid">
-        <div class="chart-card">
-            <h3 class="chart-title">Sleep Patterns</h3>
-            <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
-                <polyline points="10,80 50,70 90,60 130,75 170,55 190,65" fill="none" stroke="#00BFA5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 10,80 L 50,70 L 90,60 L 130,75 L 170,55 L 190,65 L 190,100 L 10,100" fill="#00BFA5" opacity="0.1"/>
-            </svg>
+            <a href="{{ url_for('main.chat_page') }}" class="group rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-teal-200 hover:bg-white">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-700">
+                        <i data-lucide="message-circle" class="h-5 w-5"></i>
+                    </span>
+                    <i data-lucide="arrow-up-right" class="h-5 w-5 text-slate-400 transition group-hover:text-teal-600"></i>
+                </div>
+                <h5 class="mt-5 text-lg font-semibold text-slate-900">AI Chat</h5>
+                <p class="mt-2 text-sm text-slate-500">Talk through stress, routines, or the next step you want to take.</p>
+            </a>
+
+            <a href="{{ url_for('main.mental_check_page') }}" class="group rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-teal-200 hover:bg-white">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+                        <i data-lucide="brain" class="h-5 w-5"></i>
+                    </span>
+                    <i data-lucide="arrow-up-right" class="h-5 w-5 text-slate-400 transition group-hover:text-teal-600"></i>
+                </div>
+                <h5 class="mt-5 text-lg font-semibold text-slate-900">Mental Health Support</h5>
+                <p class="mt-2 text-sm text-slate-500">Open guided support tools and mental health resources.</p>
+            </a>
         </div>
-        <div class="chart-card">
-            <h3 class="chart-title">Anxiety Levels</h3>
-            <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
-                <polyline points="10,50 50,55 90,45 130,60 170,40 190,50" fill="none" stroke="#FFB400" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 10,50 L 50,55 L 90,45 L 130,60 L 170,40 L 190,50 L 190,100 L 10,100" fill="#FFB400" opacity="0.1"/>
-            </svg>
-        </div>
-        <div class="chart-card">
-            <h3 class="chart-title">Energy Flow</h3>
-            <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
-                <polyline points="10,40 50,65 90,30 130,70 170,35 190,55" fill="none" stroke="#00BFA5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 10,40 L 50,65 L 90,30 L 130,70 L 170,35 L 190,55 L 190,100 L 10,100" fill="#00BFA5" opacity="0.1"/>
-            </svg>
-        </div>
-    </div>
+    </section>
 </div>
-
-<script>
-    // Dark mode integration with existing theme
-    function initDashboard() {
-        const chatInput = document.querySelector('.chat-input');
-        const chatSendBtn = document.querySelector('.chat-send-btn');
-        const chatMessages = document.querySelector('.chat-messages');
-
-        if (chatSendBtn) {
-            chatSendBtn.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendMessage();
-            });
-        }
-
-        function sendMessage() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-
-            const userMessageDiv = document.createElement('div');
-            userMessageDiv.className = 'message user';
-            userMessageDiv.innerHTML = `<div class="message-content">${escapeHtml(message)}</div>`;
-            chatMessages.appendChild(userMessageDiv);
-
-            chatInput.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            setTimeout(() => {
-                const aiMessageDiv = document.createElement('div');
-                aiMessageDiv.className = 'message ai';
-                const responses = [
-                    'That sounds important. How are you feeling about it?',
-                    'I appreciate you sharing. Let\'s explore this together. 🌿',
-                    'You\'re doing great! Remember to be kind to yourself. 💚',
-                    'What small step could help you right now?'
-                ];
-                const response = responses[Math.floor(Math.random() * responses.length)];
-                aiMessageDiv.innerHTML = `<div class="message-content">${response}</div>`;
-                chatMessages.appendChild(aiMessageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 500);
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', initDashboard);
-</script>
 {% endblock %}

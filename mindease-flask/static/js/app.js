@@ -132,11 +132,15 @@ document.getElementById('loginBtn')?.addEventListener('click', () => {
 // ==================== Symptom Check ====================
 
 async function loadSymptomCategories() {
+    const container = document.getElementById('symptomCategories');
+    if (!container) {
+        return;
+    }
+
     try {
         const response = await fetch(`${API_BASE}/symptoms-list`);
         const symptoms = await response.json();
-        
-        const container = document.getElementById('symptomCategories');
+
         container.innerHTML = '';
         
         for (const [category, items] of Object.entries(symptoms)) {
@@ -424,5 +428,7 @@ async function loadDashboard() {
 // ==================== Initialization ====================
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadSymptomCategories();
+    if (document.getElementById('symptomCategories')) {
+        loadSymptomCategories();
+    }
 });

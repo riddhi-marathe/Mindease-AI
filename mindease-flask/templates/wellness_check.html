@@ -5,263 +5,488 @@
 
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* Wellness Check Card Styles */
+    .wellness-intro-card {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .wellness-form-card {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .wellness-form-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        border-color: rgba(16, 185, 129, 0.15);
+    }
+
+    .wellness-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(16, 185, 129, 0.1);
+    }
+
+    .wellness-card-header i {
+        color: #10b981;
+        flex-shrink: 0;
+    }
+
+    .wellness-card-header h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+    }
+
+    .form-group-wellness {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group-wellness:last-child {
+        margin-bottom: 0;
+    }
+
+    .helper-text {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+        font-style: italic;
+    }
+
+    .success-card {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+        border: 1px solid #10b981;
+        border-left: 4px solid #10b981;
+        animation: slideDown 0.4s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success-badge {
+        display: inline-block;
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-top: 0.75rem;
+    }
+
+    .wellness-form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 896px) {
+        .wellness-form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto space-y-6">
-    <!-- Info Section -->
-    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
-        <div class="flex items-start space-x-4">
-            <i data-lucide="heart" class="w-6 h-6 text-green-600 mt-1"></i>
+<div class="max-w-6xl mx-auto">
+    <!-- Success Message (Hidden by default) -->
+    <div id="successMessage" class="mb-6 hidden">
+        <div class="wellness-form-card success-card p-6 rounded-lg">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 pt-0.5">
+                    <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-lg font-semibold text-green-900 mb-1">Thanks for checking in with yourself!</h4>
+                    <p class="text-sm text-green-800 mb-3">Your wellness assessment has been saved and will help us provide better recommendations.</p>
+                    <div id="successSummary" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro Card -->
+    <div class="wellness-intro-card rounded-lg p-8 mb-8">
+        <div class="flex items-start space-x-4 max-w-3xl">
+            <div class="text-4xl flex-shrink-0">🌿</div>
             <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Personalized Wellness Assessment</h3>
-                <p class="text-sm text-gray-700">Get AI-powered wellness recommendations based on your current symptoms, health history, and lifestyle factors.</p>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Wellness Check</h1>
+                <p class="text-base text-gray-700 leading-relaxed">
+                    Take a moment to reflect on how you're doing today. This is a simple self-check, not a medical diagnosis. 
+                    Your honest answers help us understand your wellbeing better and provide personalized support.
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Wellness Assessment Form -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <i data-lucide="clipboard-list" class="w-6 h-6 mr-2 text-green-600"></i>
-            Wellness Assessment
-        </h3>
-
-        <form id="wellnessForm" class="space-y-6">
-            <!-- Current Symptoms -->
-            <div>
-                <label for="wellnessSymptoms" class="block text-sm font-medium text-gray-700 mb-2">Current Symptoms</label>
-                <textarea id="wellnessSymptoms" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Describe any symptoms you're experiencing..."></textarea>
+    <form id="wellnessForm" class="wellness-form-grid">
+        
+        <!-- Mood & Emotions Card -->
+        <div class="wellness-form-card rounded-lg p-6">
+            <div class="wellness-card-header">
+                <i data-lucide="smile" class="w-5 h-5"></i>
+                <h3>Mood & Emotions</h3>
+            </div>
+            
+            <div class="form-group-wellness">
+                <label for="moodRating" class="block text-sm font-medium text-gray-700 mb-3">How are you feeling right now? (1-10)</label>
+                <div class="flex items-center space-x-4">
+                    <input type="range" id="moodRating" min="1" max="10" value="5" 
+                           class="flex-1 h-2 bg-green-100 rounded-lg appearance-none cursor-pointer accent-green-600">
+                    <span id="moodValue" class="text-lg font-semibold text-green-600 w-10 text-center">5</span>
+                </div>
+                <div class="helper-text mt-2">1 = Very low · 10 = Excellent</div>
             </div>
 
-            <!-- Health History -->
-            <div>
-                <label for="healthHistory" class="block text-sm font-medium text-gray-700 mb-2">Health History</label>
-                <textarea id="healthHistory" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Any previous health conditions, surgeries, or chronic illnesses..."></textarea>
+            <div class="form-group-wellness">
+                <label for="moodDescription" class="block text-sm font-medium text-gray-700 mb-2">Describe your mood</label>
+                <textarea id="moodDescription" rows="3" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                          placeholder="Happy, anxious, calm, overwhelmed... How are you feeling today?"></textarea>
+                <div class="helper-text">It's okay if you're not sure—answer as best you can.</div>
+            </div>
+        </div>
+
+        <!-- Energy & Sleep Card -->
+        <div class="wellness-form-card rounded-lg p-6">
+            <div class="wellness-card-header">
+                <i data-lucide="battery" class="w-5 h-5"></i>
+                <h3>Energy & Sleep</h3>
             </div>
 
-            <!-- Lifestyle -->
-            <div>
-                <label for="lifestyle" class="block text-sm font-medium text-gray-700 mb-2">Lifestyle Factors</label>
-                <textarea id="lifestyle" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Exercise frequency, diet habits, sleep patterns, stress levels, etc..."></textarea>
+            <div class="form-group-wellness">
+                <label for="energyLevel" class="block text-sm font-medium text-gray-700 mb-3">Current energy level (1-10)</label>
+                <div class="flex items-center space-x-4">
+                    <input type="range" id="energyLevel" min="1" max="10" value="5" 
+                           class="flex-1 h-2 bg-amber-100 rounded-lg appearance-none cursor-pointer accent-amber-600">
+                    <span id="energyValue" class="text-lg font-semibold text-amber-600 w-10 text-center">5</span>
+                </div>
+                <div class="helper-text mt-2">1 = Exhausted · 10 = Very energetic</div>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center">
-                <i data-lucide="sparkles" class="w-5 h-5 mr-2"></i>
-                Get Wellness Recommendations
-            </button>
-        </form>
-
-        <!-- Results Section -->
-        <div id="wellnessResults" class="mt-6 hidden">
-            <div class="border-t pt-6">
-                <h4 class="text-lg font-semibold text-gray-900 mb-4">Your Wellness Plan</h4>
-                <div id="wellnessContent" class="space-y-4"></div>
+            <div class="form-group-wellness">
+                <label for="sleepHours" class="block text-sm font-medium text-gray-700 mb-2">Hours of sleep last night</label>
+                <input type="number" id="sleepHours" step="0.5" min="0" max="24" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                       placeholder="e.g., 7.5">
             </div>
+
+            <div class="form-group-wellness">
+                <label for="sleepQuality" class="block text-sm font-medium text-gray-700 mb-2">Sleep quality</label>
+                <select id="sleepQuality" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                    <option value="">Select quality...</option>
+                    <option value="poor">Poor - Restless & interrupted</option>
+                    <option value="fair">Fair - Some interruptions</option>
+                    <option value="good">Good - Mostly restful</option>
+                    <option value="excellent">Excellent - Very restful</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Stress & Coping Card -->
+        <div class="wellness-form-card rounded-lg p-6">
+            <div class="wellness-card-header">
+                <i data-lucide="wind" class="w-5 h-5"></i>
+                <h3>Stress & Coping</h3>
+            </div>
+
+            <div class="form-group-wellness">
+                <label for="stressLevel" class="block text-sm font-medium text-gray-700 mb-3">Current stress level (1-10)</label>
+                <div class="flex items-center space-x-4">
+                    <input type="range" id="stressLevel" min="1" max="10" value="5" 
+                           class="flex-1 h-2 bg-red-100 rounded-lg appearance-none cursor-pointer accent-red-600">
+                    <span id="stressValue" class="text-lg font-semibold text-red-600 w-10 text-center">5</span>
+                </div>
+                <div class="helper-text mt-2">1 = Very relaxed · 10 = Extremely stressed</div>
+            </div>
+
+            <div class="form-group-wellness">
+                <label for="stressors" class="block text-sm font-medium text-gray-700 mb-2">Main stressors today</label>
+                <textarea id="stressors" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                          placeholder="Work, relationships, health, finances... What's on your mind?"></textarea>
+                <div class="helper-text">It's okay if you're not sure—answer as best you can.</div>
+            </div>
+
+            <div class="form-group-wellness">
+                <label for="copingMethods" class="block text-sm font-medium text-gray-700 mb-2">How are you coping?</label>
+                <textarea id="copingMethods" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                          placeholder="Exercise, meditation, talking to friends, hobbies..."></textarea>
+            </div>
+        </div>
+
+        <!-- Health Context Card -->
+        <div class="wellness-form-card rounded-lg p-6">
+            <div class="wellness-card-header">
+                <i data-lucide="activity" class="w-5 h-5"></i>
+                <h3>Health Context</h3>
+            </div>
+
+            <div class="form-group-wellness">
+                <label for="wellnessSymptoms" class="block text-sm font-medium text-gray-700 mb-2">Any symptoms today?</label>
+                <textarea id="wellnessSymptoms" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                          placeholder="Headaches, body aches, fatigue... (Leave blank if none)"></textarea>
+                <div class="helper-text">Including any physical sensations you're experiencing.</div>
+            </div>
+        </div>
+
+        <!-- Health History Card -->
+        <div class="wellness-form-card rounded-lg p-6">
+            <div class="wellness-card-header">
+                <i data-lucide="heart" class="w-5 h-5"></i>
+                <h3>Background</h3>
+            </div>
+
+            <div class="form-group-wellness">
+                <label for="healthHistory" class="block text-sm font-medium text-gray-700 mb-2">Health history (optional)</label>
+                <textarea id="healthHistory" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                          placeholder="Previous conditions, ongoing treatments, or medications..."></textarea>
+            </div>
+
+            <div class="form-group-wellness">
+                <label for="lifestyle" class="block text-sm font-medium text-gray-700 mb-2">Lifestyle factors (optional)</label>
+                <textarea id="lifestyle" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                          placeholder="Exercise routine, diet, work-life balance, social life..."></textarea>
+            </div>
+        </div>
+    </form>
+
+    <!-- Submit Button Section -->
+    <div class="mt-8 flex gap-4 justify-center">
+        <button type="submit" form="wellnessForm" 
+                class="bg-green-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center shadow-md hover:shadow-lg">
+            <i data-lucide="sparkles" class="w-5 h-5 mr-2"></i>
+            Get Wellness Recommendations
+        </button>
+        <button type="reset" form="wellnessForm"
+                class="bg-gray-200 text-gray-700 py-3 px-8 rounded-lg font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-200">
+            Clear
+        </button>
+    </div>
+
+    <!-- Results Section -->
+    <div id="wellnessResults" class="mt-8 hidden">
+        <div class="wellness-form-card rounded-lg p-6">
+            <div class="wellness-card-header">
+                <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                <h3>Your Wellness Plan</h3>
+            </div>
+            <div id="wellnessContent" class="space-y-4"></div>
         </div>
     </div>
 
-    <!-- Wellness Charts -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+    <!-- Results Section -->
+    <div id="wellnessResults" class="mt-8 hidden">
+        <div class="wellness-form-card rounded-lg p-6">
+            <div class="wellness-card-header">
+                <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                <h3>Your Wellness Plan</h3>
+            </div>
+            <div id="wellnessContent" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Wellness Trends Section -->
+    <div class="mt-10 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
             <i data-lucide="bar-chart-3" class="w-6 h-6 mr-2 text-green-600"></i>
-            Wellness Trends
-        </h3>
+            Your Wellness Trends
+        </h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Mood Chart -->
-            <div>
-                <h4 class="font-semibold text-gray-900 mb-4">Mood Trends</h4>
+            <div class="wellness-form-card rounded-lg p-6">
+                <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                    <i data-lucide="smile" class="w-5 h-5 mr-2 text-blue-600"></i>
+                    Mood Trends
+                </h4>
                 <canvas id="moodChart" width="400" height="200"></canvas>
             </div>
 
             <!-- Sleep Chart -->
-            <div>
-                <h4 class="font-semibold text-gray-900 mb-4">Sleep Patterns</h4>
+            <div class="wellness-form-card rounded-lg p-6">
+                <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                    <i data-lucide="moon" class="w-5 h-5 mr-2 text-purple-600"></i>
+                    Sleep Patterns
+                </h4>
                 <canvas id="sleepChart" width="400" height="200"></canvas>
             </div>
 
             <!-- Energy Chart -->
-            <div>
-                <h4 class="font-semibold text-gray-900 mb-4">Energy Levels</h4>
+            <div class="wellness-form-card rounded-lg p-6">
+                <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                    <i data-lucide="battery" class="w-5 h-5 mr-2 text-amber-600"></i>
+                    Energy Levels
+                </h4>
                 <canvas id="energyChart" width="400" height="200"></canvas>
             </div>
 
             <!-- Stress Chart -->
-            <div>
-                <h4 class="font-semibold text-gray-900 mb-4">Stress Levels</h4>
+            <div class="wellness-form-card rounded-lg p-6">
+                <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                    <i data-lucide="wind" class="w-5 h-5 mr-2 text-red-600"></i>
+                    Stress Levels
+                </h4>
                 <canvas id="stressChart" width="400" height="200"></canvas>
             </div>
         </div>
 
         <div class="mt-6 text-center">
-            <button onclick="loadWellnessData()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+            <button onclick="loadWellnessData()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition shadow-md hover:shadow-lg">
                 Refresh Charts
             </button>
         </div>
     </div>
 
-    <!-- Protein & Nutrition Swipe Cards -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-            <i data-lucide="zap" class="w-6 h-6 mr-2 text-orange-600"></i>
-            Daily Protein & Nutrition Tips
-        </h3>
-
-        <style>
-            .swipe-card-container {
-                overflow-x: auto;
-                scroll-behavior: smooth;
-                display: flex;
-                gap: 1rem;
-                padding-bottom: 0.5rem;
-                -webkit-overflow-scrolling: touch;
-            }
-            .swipe-card {
-                flex: 0 0 calc(50% - 0.5rem);
-                min-width: 250px;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            .swipe-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 12px 28px rgba(0,0,0,0.15);
-            }
-        </style>
-
-        <div class="swipe-card-container">
-            <div class="swipe-card bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-5 border border-orange-200">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Chicken Breast</h4>
-                        <p class="text-xs text-gray-600">Per 100g</p>
-                    </div>
-                    <span class="bg-orange-200 text-orange-800 px-2 py-1 rounded text-xs font-bold">31g Protein</span>
-                </div>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Benefits:</strong> Lean protein, low fat</p>
-                    <p><strong>How to use:</strong> Grilled, baked, or pan-fried</p>
-                </div>
-            </div>
-
-            <div class="swipe-card bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-5 border border-green-200">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Greek Yogurt</h4>
-                        <p class="text-xs text-gray-600">Per 100g</p>
-                    </div>
-                    <span class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs font-bold">10g Protein</span>
-                </div>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Benefits:</strong> Probiotics, calcium</p>
-                    <p><strong>How to use:</strong> Breakfast, snacks, smoothies</p>
-                </div>
-            </div>
-
-            <div class="swipe-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border border-blue-200">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Eggs</h4>
-                        <p class="text-xs text-gray-600">Per 100g</p>
-                    </div>
-                    <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs font-bold">13g Protein</span>
-                </div>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Benefits:</strong> Complete amino acids</p>
-                    <p><strong>How to use:</strong> Boiled, fried, scrambled</p>
-                </div>
-            </div>
-
-            <div class="swipe-card bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-5 border border-red-200">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Salmon</h4>
-                        <p class="text-xs text-gray-600">Per 100g</p>
-                    </div>
-                    <span class="bg-red-200 text-red-800 px-2 py-1 rounded text-xs font-bold">25g Protein</span>
-                </div>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Benefits:</strong> Omega-3, heart health</p>
-                    <p><strong>How to use:</strong> Grilled, baked, smoked</p>
-                </div>
-            </div>
-
-            <div class="swipe-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-5 border border-purple-200">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Lentils</h4>
-                        <p class="text-xs text-gray-600">Per 100g (cooked)</p>
-                    </div>
-                    <span class="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs font-bold">9g Protein</span>
-                </div>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Benefits:</strong> Fiber, plant-based</p>
-                    <p><strong>How to use:</strong> Soups, salads, curries</p>
-                </div>
-            </div>
-        </div>
-
-        <p class="text-xs text-gray-500 mt-4 text-center">💡 Swipe to see more protein recommendations</p>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+    <!-- Daily Wellness Log Section -->
+    <div class="mt-10 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
             <i data-lucide="calendar" class="w-6 h-6 mr-2 text-green-600"></i>
             Daily Wellness Log
-        </h3>
+        </h2>
 
-        <form id="wellnessLogForm" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Mood -->
-                <div>
-                    <label for="mood" class="block text-sm font-medium text-gray-700 mb-2">Current Mood</label>
-                    <select id="mood" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                        <option value="">Select mood</option>
-                        <option value="excellent">Excellent</option>
-                        <option value="good">Good</option>
-                        <option value="okay">Okay</option>
-                        <option value="low">Low</option>
-                        <option value="poor">Poor</option>
-                    </select>
+        <div class="wellness-form-card rounded-lg p-6">
+            <form id="wellnessLogForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Mood -->
+                    <div>
+                        <label for="mood" class="block text-sm font-medium text-gray-700 mb-2">Current Mood</label>
+                        <select id="mood" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                            <option value="">Select mood...</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="okay">Okay</option>
+                            <option value="low">Low</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+
+                    <!-- Sleep Hours -->
+                    <div>
+                        <label for="sleepHours" class="block text-sm font-medium text-gray-700 mb-2">Sleep Hours</label>
+                        <input type="number" id="sleepHours" step="0.5" min="0" max="24" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" placeholder="7.5">
+                    </div>
+
+                    <!-- Exercise Minutes -->
+                    <div>
+                        <label for="exerciseMinutes" class="block text-sm font-medium text-gray-700 mb-2">Exercise Minutes</label>
+                        <input type="number" id="exerciseMinutes" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" placeholder="30">
+                    </div>
+
+                    <!-- Energy Level -->
+                    <div>
+                        <label for="logEnergyLevel" class="block text-sm font-medium text-gray-700 mb-2">Energy Level (1-10)</label>
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="logEnergyLevel" min="1" max="10" value="7" class="flex-1 accent-green-600">
+                            <span id="logEnergyDisplay" class="text-lg font-semibold text-green-600 w-8 text-center">7</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Sleep Hours -->
+                <!-- Notes -->
                 <div>
-                    <label for="sleepHours" class="block text-sm font-medium text-gray-700 mb-2">Sleep Hours</label>
-                    <input type="number" id="sleepHours" step="0.5" min="0" max="24" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="7.5">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                    <textarea id="notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" placeholder="Any additional notes about your day..."></textarea>
                 </div>
 
-                <!-- Exercise Minutes -->
-                <div>
-                    <label for="exerciseMinutes" class="block text-sm font-medium text-gray-700 mb-2">Exercise Minutes</label>
-                    <input type="number" id="exerciseMinutes" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="30">
-                </div>
+                <!-- Submit Button -->
+                <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center shadow-md hover:shadow-lg">
+                    <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                    Save Daily Log
+                </button>
+            </form>
 
-                <!-- Energy Level -->
-                <div>
-                    <label for="energyLevel" class="block text-sm font-medium text-gray-700 mb-2">Energy Level (1-10)</label>
-                    <div class="flex items-center space-x-3">
-                        <input type="range" id="energyLevel" min="1" max="10" value="7" class="flex-1">
-                        <span id="energyDisplay" class="text-sm font-medium text-gray-700 w-8">7</span>
+            <!-- Log Success Message -->
+            <div id="logSuccess" class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg hidden flex items-start space-x-2">
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0"></i>
+                <p class="text-green-800 text-sm">Wellness log saved successfully!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div class="mt-10">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="activity" class="w-6 h-6 mr-2 text-green-600"></i>
+            Doctor's Health Recommendations
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Fitness Recommendation -->
+            <div class="wellness-form-card border-l-4 border-blue-600 rounded-lg p-6 hover:border-blue-700">
+                <div class="flex items-start gap-3">
+                    <div class="bg-blue-100 p-3 rounded-full flex-shrink-0">
+                        <i data-lucide="zap" class="w-5 h-5 text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Fitness Goal</h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">Aim for 30 minutes of moderate exercise daily. Include cardio and strength training for optimal health.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Notes -->
-            <div>
-                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
-                <textarea id="notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Any additional notes about your day..."></textarea>
+            <!-- Nutrition Recommendation -->
+            <div class="wellness-form-card border-l-4 border-green-600 rounded-lg p-6 hover:border-green-700">
+                <div class="flex items-start gap-3">
+                    <div class="bg-green-100 p-3 rounded-full flex-shrink-0">
+                        <i data-lucide="apple" class="w-5 h-5 text-green-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Nutrition</h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">Maintain a balanced diet with 5+ portions of fruits and vegetables daily. Stay hydrated with adequate water intake.</p>
+                    </div>
+                </div>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center">
-                <i data-lucide="save" class="w-5 h-5 mr-2"></i>
-                Save Daily Log
-            </button>
-        </form>
+            <!-- Sleep Recommendation -->
+            <div class="wellness-form-card border-l-4 border-purple-600 rounded-lg p-6 hover:border-purple-700">
+                <div class="flex items-start gap-3">
+                    <div class="bg-purple-100 p-3 rounded-full flex-shrink-0">
+                        <i data-lucide="moon" class="w-5 h-5 text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Sleep Health</h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">Maintain 7-9 hours of sleep daily. Establish a consistent sleep schedule and avoid screens before bedtime.</p>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Log Success Message -->
-        <div id="logSuccess" class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg hidden">
-            <p class="text-green-800 text-sm">Wellness log saved successfully!</p>
+            <!-- Mental Health Recommendation -->
+            <div class="wellness-form-card border-l-4 border-pink-600 rounded-lg p-6 hover:border-pink-700">
+                <div class="flex items-start gap-3">
+                    <div class="bg-pink-100 p-3 rounded-full flex-shrink-0">
+                        <i data-lucide="heart" class="w-5 h-5 text-pink-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Mental Wellness</h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">Practice mindfulness and meditation for 10-15 minutes daily. Connect with friends and family regularly.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -269,10 +494,41 @@
 <script>
     let moodChart, sleepChart, energyChart, stressChart;
 
-    // Initialize charts
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
         loadWellnessData();
+        setupEventListeners();
     });
+
+    function setupEventListeners() {
+        // Update slider displays
+        document.getElementById('moodRating').addEventListener('input', function() {
+            document.getElementById('moodValue').textContent = this.value;
+        });
+
+        document.getElementById('energyLevel').addEventListener('input', function() {
+            document.getElementById('energyValue').textContent = this.value;
+        });
+
+        document.getElementById('stressLevel').addEventListener('input', function() {
+            document.getElementById('stressValue').textContent = this.value;
+        });
+
+        document.getElementById('logEnergyLevel').addEventListener('input', function() {
+            document.getElementById('logEnergyDisplay').textContent = this.value;
+        });
+
+        // Form submission
+        document.getElementById('wellnessForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            wellness_check();
+        });
+
+        document.getElementById('wellnessLogForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveWellnessLog();
+        });
+    }
 
     function loadWellnessData() {
         fetch('/api/wellness/logs')
@@ -281,7 +537,6 @@
             if (data.logs && data.logs.length > 0) {
                 updateCharts(data.logs);
             } else {
-                // Show empty state
                 showEmptyCharts();
             }
         })
@@ -292,7 +547,6 @@
     }
 
     function updateCharts(logs) {
-        // Prepare data
         const labels = logs.slice(-7).map(log => new Date(log.created_at).toLocaleDateString());
         const moodData = logs.slice(-7).map(log => getMoodValue(log.mood));
         const sleepData = logs.slice(-7).map(log => log.sleep_hours || 0);
@@ -311,17 +565,14 @@
                     data: moodData,
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4
+                    tension: 0.4,
+                    fill: true
                 }]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10
-                    }
-                }
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, max: 10 } }
             }
         });
 
@@ -342,12 +593,8 @@
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 12
-                    }
-                }
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, max: 12 } }
             }
         });
 
@@ -363,17 +610,14 @@
                     data: energyData,
                     borderColor: 'rgb(245, 158, 11)',
                     backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    tension: 0.4
+                    tension: 0.4,
+                    fill: true
                 }]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10
-                    }
-                }
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, max: 10 } }
             }
         });
 
@@ -389,29 +633,28 @@
                     data: stressData,
                     borderColor: 'rgb(239, 68, 68)',
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    tension: 0.4
+                    tension: 0.4,
+                    fill: true
                 }]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10
-                    }
-                }
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, max: 10 } }
             }
         });
     }
 
     function showEmptyCharts() {
-        const emptyMessage = '<div class="text-center py-8 text-gray-500">No wellness data available. Start logging your daily wellness to see trends!</div>';
-        
+        const emptyMessage = '<p class="text-center py-4 text-gray-500 text-sm">No wellness data yet. Start logging your daily wellness to see trends!</p>';
         ['moodChart', 'sleepChart', 'energyChart', 'stressChart'].forEach(id => {
-            document.getElementById(id).style.display = 'none';
-            const container = document.getElementById(id).parentElement;
-            if (!container.querySelector('.empty-message')) {
-                container.insertAdjacentHTML('beforeend', '<div class="empty-message">' + emptyMessage + '</div>');
+            const canvas = document.getElementById(id);
+            if (canvas) {
+                canvas.style.display = 'none';
+                const parent = canvas.parentElement;
+                if (!parent.querySelector('.empty-message')) {
+                    parent.insertAdjacentHTML('beforeend', '<div class="empty-message">' + emptyMessage + '</div>');
+                }
             }
         });
     }
@@ -424,30 +667,22 @@
         return moodMap[mood] || 5;
     }
 
-    // Update energy level display
-    document.getElementById('energyLevel').addEventListener('input', function() {
-        document.getElementById('energyDisplay').textContent = this.value;
-    });
-
-    // Handle wellness form submission
-    document.getElementById('wellnessForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        wellness_check();
-    });
-
-    // Handle wellness log submission
-    document.getElementById('wellnessLogForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveWellnessLog();
-    });
-
     function wellness_check() {
+        const moodRating = document.getElementById('moodRating').value;
+        const moodDescription = document.getElementById('moodDescription').value;
+        const energyLevel = document.getElementById('energyLevel').value;
+        const sleepHours = document.getElementById('sleepHours').value;
+        const sleepQuality = document.getElementById('sleepQuality').value;
+        const stressLevel = document.getElementById('stressLevel').value;
+        const stressors = document.getElementById('stressors').value;
+        const copingMethods = document.getElementById('copingMethods').value;
         const symptoms = document.getElementById('wellnessSymptoms').value;
         const healthHistory = document.getElementById('healthHistory').value;
         const lifestyle = document.getElementById('lifestyle').value;
 
-        if (!symptoms.trim() && !healthHistory.trim() && !lifestyle.trim()) {
-            alert('Please provide some information about your symptoms, health history, or lifestyle.');
+        // Check if at least some fields are filled
+        if (!moodDescription && !stressors && !symptoms && !healthHistory && !lifestyle) {
+            alert('Please provide some information about how you\'re feeling.');
             return;
         }
 
@@ -457,16 +692,15 @@
         // Show loading
         resultsDiv.classList.remove('hidden');
         contentDiv.innerHTML = '<div class="flex items-center justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div></div>';
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         fetch('/api/health/wellness-check', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                symptoms: symptoms,
+                symptoms: symptoms || moodDescription,
                 health_history: healthHistory,
-                lifestyle: lifestyle
+                lifestyle: lifestyle || `Mood: ${moodRating}/10, Energy: ${energyLevel}/10, Stress: ${stressLevel}/10, Sleep: ${sleepHours}h (${sleepQuality}), Coping: ${copingMethods}`
             })
         })
         .then(response => response.json())
@@ -474,7 +708,7 @@
             if (data.error) {
                 contentDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4"><p class="text-red-800">${data.error}</p></div>`;
             } else {
-                displayWellnessResults(data);
+                displayWellnessResults(data, moodRating, energyLevel, stressLevel);
             }
         })
         .catch(error => {
@@ -483,69 +717,63 @@
         });
     }
 
-    function displayWellnessResults(data) {
+    function displayWellnessResults(data, mood, energy, stress) {
         const contentDiv = document.getElementById('wellnessContent');
+        const successDiv = document.getElementById('successMessage');
+        const successSummary = document.getElementById('successSummary');
 
         let html = '';
 
         if (data.recommendations && data.recommendations.length > 0) {
             html += `
                 <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                    <h5 class="font-semibold text-green-900 mb-2 flex items-center">
+                    <h5 class="font-semibold text-green-900 mb-3 flex items-center">
                         <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
                         Personalized Recommendations
                     </h5>
                     <ul class="list-disc list-inside text-green-800 space-y-1">
-                        ${data.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        ${data.recommendations.map(rec => `<li class="text-sm">${rec}</li>`).join('')}
                     </ul>
                 </div>
             `;
         }
 
-        if (data.lifestyle_suggestions && data.lifestyle_suggestions.length > 0) {
+        if (data.full_support) {
             html += `
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <h5 class="font-semibold text-blue-900 mb-2 flex items-center">
-                        <i data-lucide="target" class="w-5 h-5 mr-2"></i>
-                        Lifestyle Suggestions
+                        <i data-lucide="heart" class="w-5 h-5 mr-2"></i>
+                        Wellness Insights
                     </h5>
-                    <ul class="list-disc list-inside text-blue-800 space-y-1">
-                        ${data.lifestyle_suggestions.map(sug => `<li>${sug}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
-        }
-
-        if (data.wellness_score) {
-            html += `
-                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-                    <h5 class="font-semibold text-purple-900 mb-2 flex items-center">
-                        <i data-lucide="award" class="w-5 h-5 mr-2"></i>
-                        Wellness Score
-                    </h5>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-3xl font-bold text-purple-600">${data.wellness_score}/100</div>
-                        <div class="flex-1 bg-purple-200 rounded-full h-2">
-                            <div class="bg-purple-600 h-2 rounded-full" style="width: ${data.wellness_score}%"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        if (data.follow_up) {
-            html += `
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h5 class="font-semibold text-yellow-900 mb-2 flex items-center">
-                        <i data-lucide="clock" class="w-5 h-5 mr-2"></i>
-                        Follow-up
-                    </h5>
-                    <p class="text-yellow-800">${data.follow_up}</p>
+                    <p class="text-blue-800 text-sm leading-relaxed">${data.full_support}</p>
                 </div>
             `;
         }
 
         contentDiv.innerHTML = html;
+
+        // Show success message
+        const summaryHtml = `
+            <div class="space-y-2">
+                <div class="flex justify-between items-center p-3 bg-white rounded border border-green-100">
+                    <span class="text-sm font-medium text-gray-700">😊 Mood:</span>
+                    <span class="success-badge">${mood}/10</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-white rounded border border-green-100">
+                    <span class="text-sm font-medium text-gray-700">⚡ Energy:</span>
+                    <span class="success-badge">${energy}/10</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-white rounded border border-green-100">
+                    <span class="text-sm font-medium text-gray-700">🌊 Stress:</span>
+                    <span class="success-badge">${stress}/10</span>
+                </div>
+            </div>
+        `;
+        
+        successSummary.innerHTML = summaryHtml;
+        successDiv.classList.remove('hidden');
+        successDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
         lucide.createIcons();
     }
 
@@ -553,7 +781,7 @@
         const mood = document.getElementById('mood').value;
         const sleepHours = document.getElementById('sleepHours').value;
         const exerciseMinutes = document.getElementById('exerciseMinutes').value;
-        const energyLevel = document.getElementById('energyLevel').value;
+        const energyLevel = document.getElementById('logEnergyLevel').value;
         const notes = document.getElementById('notes').value;
 
         if (!mood) {
@@ -563,9 +791,7 @@
 
         fetch('/api/wellness/log', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 mood: mood,
                 sleep_hours: sleepHours ? parseFloat(sleepHours) : null,
@@ -581,10 +807,11 @@
             } else {
                 document.getElementById('logSuccess').classList.remove('hidden');
                 document.getElementById('wellnessLogForm').reset();
-                document.getElementById('energyDisplay').textContent = '7';
+                document.getElementById('logEnergyDisplay').textContent = '7';
                 setTimeout(() => {
                     document.getElementById('logSuccess').classList.add('hidden');
                 }, 3000);
+                loadWellnessData();
             }
         })
         .catch(error => {
@@ -592,72 +819,7 @@
             alert('An error occurred while saving your log.');
         });
     }
-</script>
 
-    <!-- AI Doctor's Medical Report -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-            <i data-lucide="activity" class="w-6 h-6 mr-2 text-red-600"></i>
-            Doctor's AI Recommendations
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Fitness Recommendation -->
-            <div class="border-l-4 border-blue-600 bg-blue-50 p-4 rounded-r-lg">
-                <div class="flex items-start gap-3">
-                    <div class="bg-blue-200 p-2 rounded-full">
-                        <i data-lucide="zap" class="w-5 h-5 text-blue-600"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Fitness Goal</h4>
-                        <p class="text-sm text-gray-700 mt-1">Aim for 30 minutes of moderate exercise daily. Include cardio and strength training for optimal health.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Nutrition Recommendation -->
-            <div class="border-l-4 border-green-600 bg-green-50 p-4 rounded-r-lg">
-                <div class="flex items-start gap-3">
-                    <div class="bg-green-200 p-2 rounded-full">
-                        <i data-lucide="apple" class="w-5 h-5 text-green-600"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Nutrition</h4>
-                        <p class="text-sm text-gray-700 mt-1">Maintain a balanced diet with 5+ portions of fruits and vegetables daily. Stay hydrated with adequate water intake.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sleep Recommendation -->
-            <div class="border-l-4 border-purple-600 bg-purple-50 p-4 rounded-r-lg">
-                <div class="flex items-start gap-3">
-                    <div class="bg-purple-200 p-2 rounded-full">
-                        <i data-lucide="moon" class="w-5 h-5 text-purple-600"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Sleep Health</h4>
-                        <p class="text-sm text-gray-700 mt-1">Maintain 7-9 hours of sleep daily. Establish a consistent sleep schedule and avoid screens before bedtime.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mental Health Recommendation -->
-            <div class="border-l-4 border-pink-600 bg-pink-50 p-4 rounded-r-lg">
-                <div class="flex items-start gap-3">
-                    <div class="bg-pink-200 p-2 rounded-full">
-                        <i data-lucide="heart" class="w-5 h-5 text-pink-600"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Mental Wellness</h4>
-                        <p class="text-sm text-gray-700 mt-1">Practice mindfulness and meditation for 10-15 minutes daily. Connect with friends and family regularly.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
     lucide.createIcons();
 </script>
 

@@ -1117,3 +1117,15 @@ h1, h2.section-title, h3 {
   opacity: 1;
 }
 
+/* Ensure content stays on top of glow effect */
+.module-header,
+.module-card h3,
+.module-card p,
+.module-stats,
+.module-link {
+  position: relative;
+  z-index: 2;
+}
+
+
+

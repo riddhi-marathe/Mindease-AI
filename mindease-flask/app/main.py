@@ -1,5 +1,6 @@
 import json
-from datetime import date
+from collections import Counter
+from datetime import date, datetime, timedelta
 
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -10,6 +11,28 @@ from .services.ai_engine import AIEngine
 from .services.disease_predictor import DiseasePredictors
 
 main_bp = Blueprint("main", __name__)
+
+ASSESSMENT_TITLES = {
+    "symptom_check": "Symptom check",
+    "wellness": "Wellness check",
+    "mental_health": "Mental health support",
+    "health_screening": "Health screening",
+}
+
+ASSESSMENT_ICONS = {
+    "symptom_check": "stethoscope",
+    "wellness": "heart",
+    "mental_health": "brain",
+    "health_screening": "clipboard-list",
+}
+
+METRIC_LABELS = {
+    "heart_rate": "Heart rate",
+    "blood_pressure": "Blood pressure",
+    "weight": "Weight",
+    "temperature": "Temperature",
+    "blood_sugar": "Blood sugar",
+}
 
 
 def _current_user():
@@ -95,6 +118,307 @@ def _save_assessment(user, assessment_type, results, symptoms=None):
     return assessment
 
 
+def _average(values, precision=1):
+    numeric_values = [value for value in values if isinstance(value, (int, float))]
+    if not numeric_values:
+        return None
+    return round(sum(numeric_values) / len(numeric_values), precision)
+
+
+def _relative_date(value):
+    if not value:
+        return ""
+
+    target_date = value.date() if isinstance(value, datetime) else value
+    delta_days = (date.today() - target_date).days
+
+    if delta_days <= 0:
+        return "Today"
+    if delta_days == 1:
+        return "Yesterday"
+    if delta_days < 7:
+        return f"{delta_days} days ago"
+    return target_date.strftime("%b %d, %Y")
+
+
+def _format_mood_label(raw_mood):
+    if not raw_mood:
+        return None
+    return str(raw_mood).replace("_", " ").strip().title()
+
+
+def _check_in_streak(logs):
+    log_dates = {log.log_date for log in logs if log.log_date}
+    streak = 0
+    current_day = date.today()
+
+    while current_day in log_dates:
+        streak += 1
+        current_day -= timedelta(days=1)
+
+    return streak
+
+
+def _weekly_energy_series(logs):
+    latest_by_day = {}
+    for log in logs:
+        if not log.log_date:
+            continue
+        existing = latest_by_day.get(log.log_date)
+        if not existing or log.created_at > existing.created_at:
+            latest_by_day[log.log_date] = log
+
+    series = []
+    for offset in range(6, -1, -1):
+        day = date.today() - timedelta(days=offset)
+        log = latest_by_day.get(day)
+        energy_value = log.energy_level if log and log.energy_level is not None else 0
+        series.append(
+            {
+                "label": day.strftime("%a"),
+                "value": energy_value,
+                "height": max(16, energy_value * 10) if energy_value else 12,
+                "has_entry": bool(log),
+                "mood": _format_mood_label(log.mood) if log else "No check-in",
+            }
+        )
+
+    return series
+
+
+def _build_activity_feed(assessments, logs, metrics):
+    items = []
+
+    for assessment in assessments[:5]:
+        assessment_name = ASSESSMENT_TITLES.get(
+            assessment.assessment_type, "Health assessment"
+        )
+        detail = "Saved to your history"
+        if assessment.urgency_level:
+            detail = f"Urgency: {assessment.urgency_level.replace('_', ' ').title()}"
+
+        items.append(
+            {
+                "kind": "assessment",
+                "icon": ASSESSMENT_ICONS.get(assessment.assessment_type, "file-text"),
+                "title": f"{assessment_name} completed",
+                "detail": detail,
+                "time_label": _relative_date(assessment.created_at),
+                "sort_key": assessment.created_at,
+            }
+        )
+
+    for log in logs[:5]:
+        detail_parts = []
+        if log.sleep_hours is not None:
+            detail_parts.append(f"{log.sleep_hours:g}h sleep")
+        if log.energy_level is not None:
+            detail_parts.append(f"energy {log.energy_level}/10")
+        if log.stress_level is not None:
+            detail_parts.append(f"stress {log.stress_level}/10")
+
+        items.append(
+            {
+                "kind": "log",
+                "icon": "smile",
+                "title": "Daily wellness log added",
+                "detail": " | ".join(detail_parts) or "Check-in captured for today",
+                "time_label": _relative_date(log.log_date),
+                "sort_key": log.created_at,
+            }
+        )
+
+    for metric in metrics[:5]:
+        metric_name = METRIC_LABELS.get(
+            metric.metric_type, metric.metric_type.replace("_", " ").title()
+        )
+        metric_value = f"{metric.value} {metric.unit}".strip()
+        items.append(
+            {
+                "kind": "metric",
+                "icon": "activity",
+                "title": f"{metric_name} recorded",
+                "detail": metric_value,
+                "time_label": _relative_date(metric.recorded_at),
+                "sort_key": metric.recorded_at,
+            }
+        )
+
+    ordered_items = sorted(items, key=lambda item: item["sort_key"], reverse=True)
+    return ordered_items[:6]
+
+
+def _build_focus_items(assessments, logs, metrics, avg_sleep, avg_stress, weekly_checkins):
+    focus_items = []
+
+    if not logs:
+        focus_items.append("Complete a wellness check to start building your trend history.")
+    else:
+        if avg_stress is not None and avg_stress >= 7:
+            focus_items.append(
+                "Stress has been elevated lately. A short grounding exercise could help today."
+            )
+        if avg_sleep is not None and avg_sleep < 7:
+            focus_items.append(
+                "Your sleep average is below the recommended range. Aim for a calmer wind-down tonight."
+            )
+        if weekly_checkins < 3:
+            focus_items.append(
+                "Add a few more check-ins this week to unlock stronger dashboard insights."
+            )
+
+    if not assessments:
+        focus_items.append(
+            "Run a screening, wellness check, or symptom check to build your assessment history."
+        )
+
+    if not metrics:
+        focus_items.append(
+            "Track at least one health metric so your dashboard can show more health context."
+        )
+
+    if not focus_items:
+        focus_items.append(
+            "Your routine looks steady. Keep logging consistently so trends stay meaningful."
+        )
+
+    return focus_items[:3]
+
+
+def _build_dashboard_context(user):
+    guest_series = _weekly_energy_series([])
+    if not user:
+        return {
+            "is_guest": True,
+            "display_name": "there",
+            "summary": {
+                "assessments": 0,
+                "weekly_checkins": 0,
+                "streak": 0,
+                "metrics": 0,
+                "avg_sleep": None,
+                "avg_energy": None,
+                "avg_stress": None,
+                "wellness_score": None,
+            },
+            "activity_feed": [],
+            "weekly_energy": guest_series,
+            "dominant_mood": None,
+            "latest_assessment": None,
+            "trend_message": "Sign in to see your saved history, trend snapshots, and personalized follow-up suggestions.",
+            "sleep_message": "Track sleep and daily check-ins to reveal energy patterns over time.",
+            "stress_message": "Use the wellness tools to capture stress and mood signals in one place.",
+            "focus_items": [
+                "Sign in or create an account to save your dashboard history.",
+                "Start with a wellness check if you want a quick self-reflection.",
+                "Use symptom check or screening tools anytime you need more context.",
+            ],
+            "highlights": ["Guest preview mode", "History unlocks after login"],
+        }
+
+    assessments = (
+        HealthAssessment.query.filter_by(user_id=user.id)
+        .order_by(HealthAssessment.created_at.desc())
+        .all()
+    )
+    logs = (
+        WellnessLog.query.filter_by(user_id=user.id)
+        .order_by(WellnessLog.created_at.desc())
+        .all()
+    )
+    metrics = (
+        HealthMetric.query.filter_by(user_id=user.id)
+        .order_by(HealthMetric.recorded_at.desc())
+        .all()
+    )
+
+    weekly_cutoff = date.today() - timedelta(days=6)
+    weekly_logs = [log for log in logs if log.log_date and log.log_date >= weekly_cutoff]
+
+    avg_sleep = _average([log.sleep_hours for log in logs if log.sleep_hours is not None])
+    avg_energy = _average(
+        [log.energy_level for log in logs if log.energy_level is not None]
+    )
+    avg_stress = _average(
+        [log.stress_level for log in logs if log.stress_level is not None]
+    )
+
+    score_parts = []
+    if avg_energy is not None:
+        score_parts.append(avg_energy * 10)
+    if avg_stress is not None:
+        score_parts.append((11 - avg_stress) * 10)
+    if avg_sleep is not None:
+        score_parts.append(min(avg_sleep / 8, 1) * 100)
+    wellness_score = round(sum(score_parts) / len(score_parts)) if score_parts else None
+
+    mood_counter = Counter(
+        _format_mood_label(log.mood) for log in logs if _format_mood_label(log.mood)
+    )
+    dominant_mood = mood_counter.most_common(1)[0][0] if mood_counter else None
+
+    latest_assessment = None
+    if assessments:
+        latest = assessments[0]
+        payload = _assessment_payload(latest)
+        latest_assessment = {
+            "title": ASSESSMENT_TITLES.get(latest.assessment_type, "Assessment"),
+            "result": payload["prediction"],
+            "urgency": (payload["urgency"] or "routine").replace("_", " ").title(),
+            "created_label": _relative_date(latest.created_at),
+        }
+
+    weekly_checkins = len(weekly_logs)
+    highlights = []
+    if weekly_checkins:
+        checkin_label = "check-in" if weekly_checkins == 1 else "check-ins"
+        highlights.append(f"{weekly_checkins} {checkin_label} in the last 7 days")
+    if dominant_mood:
+        highlights.append(f"Most common mood: {dominant_mood}")
+    if assessments:
+        highlights.append(f"{len(assessments)} saved assessments")
+    if not highlights:
+        highlights.append("No saved activity yet")
+
+    return {
+        "is_guest": False,
+        "display_name": user.username,
+        "summary": {
+            "assessments": len(assessments),
+            "weekly_checkins": weekly_checkins,
+            "streak": _check_in_streak(logs),
+            "metrics": len(metrics),
+            "avg_sleep": avg_sleep,
+            "avg_energy": avg_energy,
+            "avg_stress": avg_stress,
+            "wellness_score": wellness_score,
+        },
+        "activity_feed": _build_activity_feed(assessments, logs, metrics),
+        "weekly_energy": _weekly_energy_series(weekly_logs),
+        "dominant_mood": dominant_mood,
+        "latest_assessment": latest_assessment,
+        "trend_message": (
+            f"Your energy average is {avg_energy}/10 this week."
+            if avg_energy is not None
+            else "Add a few daily logs to uncover your weekly energy trend."
+        ),
+        "sleep_message": (
+            f"You are averaging {avg_sleep} hours of sleep."
+            if avg_sleep is not None
+            else "Start logging sleep to see whether rest is shaping your mood and energy."
+        ),
+        "stress_message": (
+            f"Stress is averaging {avg_stress}/10."
+            if avg_stress is not None
+            else "Stress insights appear after a few wellness logs."
+        ),
+        "focus_items": _build_focus_items(
+            assessments, logs, metrics, avg_sleep, avg_stress, weekly_checkins
+        ),
+        "highlights": highlights,
+    }
+
+
 @main_bp.route("/")
 def index():
     return render_template("index.html")
@@ -107,7 +431,12 @@ def login_page():
 
 @main_bp.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    user = _current_user()
+    return render_template(
+        "dashboard.html",
+        dashboard=_build_dashboard_context(user),
+        user=user,
+    )
 
 
 @main_bp.route("/symptom-check")
