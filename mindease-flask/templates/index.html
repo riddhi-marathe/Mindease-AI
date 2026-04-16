@@ -11,14 +11,89 @@
 </head>
 <body>
     <!-- Navigation -->
-    <!-- Loading Screen -->
+    <!-- Loading Screen with Medical Animation Sidebar -->
     <div class="loading-screen" id="loadingScreen">
-        <svg class="loading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="7" width="16" height="10" rx="2"></rect>
-            <line x1="12" y1="4" x2="12" y2="7"></line>
-            <line x1="12" y2="17" x2="12" y3="20"></line>
-        </svg>
-        <div class="loading-text">Initializing MindEase AI...</div>
+        <!-- Medical Animations Sidebar -->
+        <div class="loading-sidebar">
+            <!-- Heartbeat with pulse -->
+            <div class="loading-animation-box">
+                <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Heart -->
+                    <path d="M25 45L8 30C2 24 2 16 8 10C12 6 18 6 22 10L25 13L28 10C32 6 38 6 42 10C48 16 48 24 42 30Z" 
+                          fill="none" stroke="#7ECBA3" stroke-width="1.5" opacity="0.8" class="heartbeat-pulse"/>
+                </svg>
+            </div>
+
+            <!-- Pulse waves -->
+            <div class="loading-animation-box">
+                <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="25" cy="25" r="3" fill="#7ECBA3"/>
+                    <circle cx="25" cy="25" r="3" fill="none" stroke="#A8D8F0" stroke-width="1" opacity="0.7" class="pulse-wave-1"/>
+                    <circle cx="25" cy="25" r="3" fill="none" stroke="#7ECBA3" stroke-width="1" opacity="0.4" class="pulse-wave-2"/>
+                </svg>
+            </div>
+
+            <!-- ECG/Activity line -->
+            <div class="loading-animation-box">
+                <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="0,25 10,25 12,15 15,35 18,20 25,25 50,25" 
+                             fill="none" stroke="#7ECBA3" stroke-width="1.5" stroke-linecap="round" 
+                             stroke-linejoin="round" class="ecg-line"/>
+                </svg>
+            </div>
+
+            <!-- Stethoscope -->
+            <div class="loading-animation-box">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#A8D8F0" stroke-width="1.5" class="stethoscope-icon">
+                    <circle cx="12" cy="8" r="4" fill="none"/>
+                    <path d="M8 8c0 2-1 4-3 5"/>
+                    <path d="M16 8c0 2 1 4 3 5"/>
+                    <path d="M12 12v6"/>
+                    <circle cx="7" cy="6" r="1.2" fill="currentColor"/>
+                    <circle cx="17" cy="6" r="1.2" fill="currentColor"/>
+                    <circle cx="12" cy="18" r="2" fill="none"/>
+                </svg>
+            </div>
+
+            <!-- Medical cross -->
+            <div class="loading-animation-box">
+                <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="8" width="10" height="34" fill="#7ECBA3" opacity="0.6" class="medical-rotate"/>
+                    <rect x="8" y="20" width="34" height="10" fill="#7ECBA3" opacity="0.6" class="medical-rotate"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Main Loading Content -->
+        <div class="loading-content-center">
+            <!-- Medical Stethoscope Icon -->
+            <svg class="loading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Stethoscope Head -->
+                <circle cx="12" cy="8" r="4" fill="none"/>
+                <!-- Stethoscope Tube Left -->
+                <path d="M8 8c0 2-1 4-3 5"/>
+                <!-- Stethoscope Tube Right -->
+                <path d="M16 8c0 2 1 4 3 5"/>
+                <!-- Main Tube Down -->
+                <path d="M12 12v6"/>
+                <!-- Earpieces -->
+                <circle cx="7" cy="6" r="1.5" fill="currentColor"/>
+                <circle cx="17" cy="6" r="1.5" fill="currentColor"/>
+                <!-- Chest piece circle -->
+                <circle cx="12" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <!-- Pulse lines -->
+                <path d="M5 19h2M17 19h2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <div class="loading-indicator">
+                <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="0,20 30,20 35,5 40,35 45,15 50,25 70,20 120,20" fill="none" stroke="#7ECBA3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="loading-text">Initializing MindEase AI</div>
+            
+            <!-- Additional medical info -->
+            <div class="loading-sub-text">Powered by Advanced Medical AI</div>
+        </div>
     </div>
 
     <!-- Navigation -->
@@ -26,9 +101,15 @@
         <div class="container">
             <div class="nav-content">
                 <a href="#" class="logo">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 6v6l4 2"></path>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Medical Stethoscope - Healthcare Icon -->
+                        <circle cx="12" cy="8" r="4" fill="none"/>
+                        <path d="M8 8c0 2-1 4-3 5"/>
+                        <path d="M16 8c0 2 1 4 3 5"/>
+                        <path d="M12 12v6"/>
+                        <circle cx="7" cy="6" r="1.2" fill="currentColor"/>
+                        <circle cx="17" cy="6" r="1.2" fill="currentColor"/>
+                        <circle cx="12" cy="18" r="2" fill="none"/>
                     </svg>
                     MindEase
                 </a>
@@ -119,43 +200,87 @@
         </div>
     </section>
 
-    <!-- Testimonials Section -->
+    <!-- Professional Details Section -->
     <section id="testimonials" class="section" style="background: var(--secondary);">
         <div class="container">
-            <h2 class="section-title fade-up">Trusted by Thousands</h2>
-            <div class="testimonials-grid fade-up">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="avatar">SJ</div>
-                        <div>
-                            <h4>Sarah Johnson</h4>
-                            <p>Health Professional</p>
+            <h2 class="section-title fade-up">Enterprise-Grade AI Technology</h2>
+            <div class="tech-specs-grid fade-up">
+                <div class="tech-card interactive-card">
+                    <div class="tech-card-header">
+                        <div class="tech-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                            </svg>
                         </div>
+                        <h3>99.9% Accuracy</h3>
                     </div>
-                    <div class="testimonial-text">"MindEase transformed how I approach my wellness journey. The AI insights are spot-on and incredibly actionable."</div>
-                    <div class="stars">★★★★★</div>
+                    <p class="tech-stat-number">Medical AI Validated</p>
+                    <p class="tech-description">Leveraging advanced machine learning models trained on millions of clinical records with continuous validation protocols.</p>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="avatar" style="background: linear-gradient(135deg, #10B981, #059669);">MC</div>
-                        <div>
-                            <h4>Michael Chen</h4>
-                            <p>Fitness Coach</p>
+
+                <div class="tech-card interactive-card" style="animation-delay: 0.1s">
+                    <div class="tech-card-header">
+                        <div class="tech-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
                         </div>
+                        <h3>Real-Time Processing</h3>
                     </div>
-                    <div class="testimonial-text">"The symptom analysis and chat features have been game-changers for my clients' health monitoring."</div>
-                    <div class="stars">★★★★★</div>
+                    <p class="tech-stat-number">&lt;100ms Response</p>
+                    <p class="tech-description">Ultra-low latency AI inference optimized for instant health analysis and personalized recommendations.</p>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="avatar" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">ED</div>
-                        <div>
-                            <h4>Emily Davis</h4>
-                            <p>Wellness Advocate</p>
+
+                <div class="tech-card interactive-card" style="animation-delay: 0.2s">
+                    <div class="tech-card-header">
+                        <div class="tech-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
                         </div>
+                        <h3>HIPAA Compliant</h3>
                     </div>
-                    <div class="testimonial-text">"Perfect blend of technology and empathy. The mental health tools genuinely care about your well-being."</div>
-                    <div class="stars">★★★★★</div>
+                    <p class="tech-stat-number">Military-Grade Security</p>
+                    <p class="tech-description">End-to-end encryption with enterprise-level security protocols ensuring patient data privacy and compliance.</p>
+                </div>
+
+                <div class="tech-card interactive-card" style="animation-delay: 0.3s">
+                    <div class="tech-card-header">
+                        <div class="tech-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4a2 2 0 100 4m0-4a2 2 0 110 4"/>
+                            </svg>
+                        </div>
+                        <h3>24/7 Support</h3>
+                    </div>
+                    <p class="tech-stat-number">Continuous AI Monitoring</p>
+                    <p class="tech-description">Round-the-clock AI monitoring with automated alerts and real-time system optimization for reliability.</p>
+                </div>
+
+                <div class="tech-card interactive-card" style="animation-delay: 0.4s">
+                    <div class="tech-card-header">
+                        <div class="tech-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </div>
+                        <h3>Data Analytics</h3>
+                    </div>
+                    <p class="tech-stat-number">Advanced Insights</p>
+                    <p class="tech-description">Comprehensive analytics dashboard with predictive modeling and actionable health intelligence.</p>
+                </div>
+
+                <div class="tech-card interactive-card" style="animation-delay: 0.5s">
+                    <div class="tech-card-header">
+                        <div class="tech-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="40" height="40">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                            </svg>
+                        </div>
+                        <h3>Continuous Learning</h3>
+                    </div>
+                    <p class="tech-stat-number">Neural Optimization</p>
+                    <p class="tech-description">Self-improving AI algorithms that evolve and adapt with emerging health data and clinical research.</p>
                 </div>
             </div>
         </div>
@@ -232,12 +357,12 @@
     </footer>
 
     <script>
-        // Loading screen fade out after 1.5s
+        // Enhanced loading screen with medical animations
         setTimeout(() => {
             const loading = document.getElementById('loadingScreen');
             loading.classList.add('fade-out');
             setTimeout(() => loading.remove(), 500);
-        }, 1500);
+        }, 3000);
 
         function scrollToSection(id) {
             document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
@@ -253,6 +378,7 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.style.animationPlayState = 'running';
+                    entry.target.classList.add('animate-in');
                 }
             });
         }, observerOptions);
@@ -263,6 +389,95 @@
             el.style.transition = 'all 0.8s cubic-bezier(0.4,0,0.2,1)';
             observer.observe(el);
         });
+
+        // Interactive glow effect for tech cards (medical theme)
+        document.querySelectorAll('.tech-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', x + 'px');
+                card.style.setProperty('--mouse-y', y + 'px');
+            });
+        });
+
+        // Stethoscope logo pulse animation on page load
+        function initLogoAnimation() {
+            const logo = document.querySelector('.logo');
+            if (logo) {
+                logo.addEventListener('mouseenter', () => {
+                    const svg = logo.querySelector('svg');
+                    if (svg) {
+                        svg.style.animation = 'heartPulse 1.2s ease-in-out 2';
+                    }
+                });
+            }
+        }
+
+        // Medical activity indicator animation
+        function animateActivityIndicator() {
+            const indicator = document.querySelector('.loading-indicator');
+            if (indicator) {
+                setInterval(() => {
+                    indicator.style.opacity = '0.6';
+                    setTimeout(() => {
+                        indicator.style.opacity = '1';
+                    }, 500);
+                }, 2000);
+            }
+        }
+
+        // Initialize animations on load
+        window.addEventListener('load', () => {
+            initLogoAnimation();
+            animateActivityIndicator();
+        });
+
+        // Professional button interactions with medical theme
+        document.querySelectorAll('.primary-btn, .secondary-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.animation = 'ripple 0.6s ease-out';
+                btn.parentElement.style.position = 'relative';
+                btn.parentElement.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Smooth page transitions
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Add ripple animation keyframes dynamically
+        if (!document.querySelector('style[data-ripple]')) {
+            const style = document.createElement('style');
+            style.setAttribute('data-ripple', 'true');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     </script>
 </body>
 </html>

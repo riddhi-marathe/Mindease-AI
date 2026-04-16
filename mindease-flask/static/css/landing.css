@@ -12,9 +12,13 @@
   --sage: #A8D5BA;
   --cream: #F5F5F0;
   --earth: #8B7355;
-  --primary: var(--sage);
-  --primary-dark: #7AB69C;
-  --secondary: var(--cream);
+  --pastel-blue: #A8D8F0;
+  --cool-green: #7ECBA3;
+  --pastel-blue-dark: #6FB8D9;
+  --cool-green-dark: #5BA683;
+  --primary: var(--cool-green);
+  --primary-dark: #5BA683;
+  --secondary: var(--pastel-blue);
   --accent: var(--earth);
   --text-primary: #2D4A3A;
   --text-secondary: #5D7A6A;
@@ -40,7 +44,7 @@ body {
   font-family: 'Inter', sans-serif;
   line-height: 1.7;
   color: var(--text-primary);
-  background: linear-gradient(135deg, var(--secondary) 0%, var(--cream) 50%, #E8F0E8 100%), radial-gradient(circle at 20% 80%, rgba(168, 213, 186, 0.2) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(139, 115, 85, 0.15) 0%, transparent 50%);
+  background: linear-gradient(135deg, #E8F4F8 0%, var(--pastel-blue) 50%, var(--cool-green) 100%), radial-gradient(circle at 20% 80%, rgba(168, 216, 240, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(126, 203, 163, 0.2) 0%, transparent 50%);
   overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
 }
@@ -520,43 +524,596 @@ h1, h2.section-title, h3 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--secondary), #E2E8F0);
+  background: linear-gradient(135deg, #E8F4F8 0%, var(--pastel-blue) 50%, var(--cool-green) 100%);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 9999;
   transition: opacity 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated background elements */
+.loading-screen::before {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(126, 203, 163, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  top: -100px;
+  left: -100px;
+  animation: floatBubble 6s ease-in-out infinite;
+}
+
+.loading-screen::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(168, 216, 240, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  bottom: -50px;
+  right: -50px;
+  animation: floatBubble 8s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+/* Loading sidebar animations */
+.loading-sidebar {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  z-index: 20;
+}
+
+.loading-animation-box {
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(126, 203, 163, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: slideInLeft 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.loading-animation-box:nth-child(1) { animation-delay: 0.1s; }
+.loading-animation-box:nth-child(2) { animation-delay: 0.2s; }
+.loading-animation-box:nth-child(3) { animation-delay: 0.3s; }
+.loading-animation-box:nth-child(4) { animation-delay: 0.4s; }
+.loading-animation-box:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Pulse wave animations */
+.pulse-wave-1 {
+  animation: pulseAnimateOuter 2s ease-out infinite;
+}
+
+.pulse-wave-2 {
+  animation: pulseAnimateOuter 2s ease-out infinite;
+  animation-delay: 0.3s;
+}
+
+@keyframes pulseAnimateOuter {
+  0% {
+    r: 3;
+    opacity: 1;
+  }
+  100% {
+    r: 15;
+    opacity: 0;
+  }
+}
+
+/* Heartbeat animation */
+.heartbeat-pulse {
+  animation: heartbeatAnim 1.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes heartbeatAnim {
+  0%, 100% {
+    transform: scale(1);
+  }
+  20%, 50% {
+    transform: scale(1.15);
+  }
+  40%, 70% {
+    transform: scale(1);
+  }
+}
+
+/* ECG line animation */
+.ecg-line {
+  animation: ecgDraw 3s ease-in-out infinite;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+@keyframes ecgDraw {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -100;
+  }
+}
+
+/* Stethoscope rotation */
+.stethoscope-icon {
+  animation: stethoscopeFloat 3s ease-in-out infinite;
+}
+
+@keyframes stethoscopeFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(5deg);
+  }
+}
+
+/* Medical cross rotation */
+.medical-rotate {
+  animation: rotateMedical 2s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes rotateMedical {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+}
+
+/* Center content positioning */
+.loading-content-center {
+  position: relative;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+@keyframes floatBubble {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(20px) scale(1.05);
+  }
 }
 
 .loading-icon {
-  width: 80px;
-  height: 80px;
-  color: var(--primary);
-  animation: spinPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  width: 100px;
+  height: 100px;
+  color: var(--cool-green);
+  animation: medicalPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 10px 20px rgba(126, 203, 163, 0.2));
 }
 
-@keyframes spinPulse {
+@keyframes medicalPulse {
   0%, 100% {
     transform: scale(1) rotate(0deg);
     opacity: 1;
   }
   50% {
-    transform: scale(1.1) rotate(180deg);
-    opacity: 0.8;
+    transform: scale(1.15) rotate(10deg);
+    opacity: 0.85;
+  }
+}
+
+/* Heart beat animation for medical theme */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.08);
+  }
+}
+
+/* Medical wave animation */
+@keyframes medicalWave {
+  0%, 100% {
+    stroke-dashoffset: 1000;
+  }
+  50% {
+    stroke-dashoffset: 0;
   }
 }
 
 .loading-text {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   font-family: 'Inter', sans-serif;
-  color: var(--text-secondary);
-  font-size: 1.1rem;
+  color: #2D4A3A;
+  font-size: 1.3rem;
   letter-spacing: 0.05em;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.loading-sub-text {
+  font-size: 0.9rem;
+  color: #5D7A6A;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease-out 0.5s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Loading dots animation */
+.loading-text::after {
+  content: '';
+  animation: dots 1.5s steps(3) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  80%, 100% {
+    content: '...';
+  }
+}
+
+/* Medical activity indicator */
+.loading-indicator {
+  width: 120px;
+  height: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.loading-indicator svg {
+  width: 100%;
+  height: 100%;
+  animation: activityPulse 3s ease-in-out infinite;
+}
+
+@keyframes activityPulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .loading-screen.fade-out {
   opacity: 0;
   pointer-events: none;
+}
+
+/* Responsive for loading sidebar */
+@media (max-width: 768px) {
+  .loading-sidebar {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .loading-animation-box {
+    width: 60px;
+    height: 60px;
+  }
+
+  .loading-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .loading-text {
+    font-size: 1.1rem;
+  }
+}
+
+
+/* Tech Specs Section */
+.tech-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.tech-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(168, 213, 186, 0.1), rgba(139, 115, 85, 0.05));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.interactive-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary);
+}
+
+.interactive-card:hover .tech-icon {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.interactive-card:hover::before {
+  opacity: 1;
+}
+
+.tech-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.tech-icon {
+  width: 70px;
+  height: 70px;
+  min-width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: 16px;
+  color: white;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tech-card h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.tech-stat-number {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 1rem 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 2;
+}
+
+.tech-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* Animation for tech cards appearing */
+.fade-up {
+  animation: fadeUp 0.8s ease-out forwards;
+}
+
+@keyframes techPulse {
+  0%, 100% {
+    box-shadow: var(--shadow-md);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(168, 213, 186, 0.3);
+  }
+}
+
+.tech-card {
+  animation-name: none;
+}
+
+.tech-card:nth-child(1) { animation-delay: 0.1s; }
+.tech-card:nth-child(2) { animation-delay: 0.15s; }
+.tech-card:nth-child(3) { animation-delay: 0.2s; }
+.tech-card:nth-child(4) { animation-delay: 0.25s; }
+.tech-card:nth-child(5) { animation-delay: 0.3s; }
+.tech-card:nth-child(6) { animation-delay: 0.35s; }
+
+[data-theme="dark"] .tech-card {
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+/* Medical Theme Enhancements */
+.logo {
+  background: linear-gradient(135deg, var(--cool-green), var(--pastel-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: filter 0.3s ease;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 8px 16px rgba(126, 203, 163, 0.3));
+}
+
+/* Hospital pulse glow effect */
+.loading-icon {
+  filter: drop-shadow(0 0 8px rgba(126, 203, 163, 0.4));
+}
+
+/* Hero button with medical gradient */
+.primary-btn {
+  background: linear-gradient(135deg, var(--cool-green), var(--pastel-blue-dark));
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 20px rgba(126, 203, 163, 0.2);
+}
+
+.primary-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(126, 203, 163, 0.35);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--cool-green);
+  border: 2px solid var(--cool-green);
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.secondary-btn:hover {
+  background: var(--cool-green);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(126, 203, 163, 0.3);
+}
+
+/* Feature card enhanced gradient */
+.feature-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(232, 244, 248, 0.5));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(126, 203, 163, 0.1);
+}
+
+.feature-card:hover {
+  border-color: var(--cool-green);
+  box-shadow: 0 12px 32px rgba(126, 203, 163, 0.15);
+}
+
+/* Medical heartbeat effect for icons */
+@keyframes heartPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.05);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.03);
+  }
+}
+
+.feature-icon {
+  animation: heartPulse 2s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--cool-green), var(--pastel-blue));
+}
+
+/* Stethoscope animation for hover */
+.logo svg {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo:hover svg {
+  transform: rotate(-5deg) scale(1.1);
+}
+
+/* Medical activity line */
+.nav {
+  background: linear-gradient(90deg, rgba(168, 216, 240, 0.05), rgba(126, 203, 163, 0.05));
+  border-bottom: 2px solid rgba(126, 203, 163, 0.1);
+}
+
+/* Interactive tooltip effect for tech cards */
+.tech-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(126, 203, 163, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.tech-card:hover::after {
+  opacity: 1;
 }
 

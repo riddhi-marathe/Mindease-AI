@@ -438,8 +438,7 @@ def assessments():
         HealthAssessment.query.filter_by(user_id=user.id)
         .order_by(HealthAssessment.created_at.desc())
         .all()
-        if user
-        else []
+        if user else []
     )
     return jsonify(
         {"assessments": [_assessment_payload(assessment) for assessment in assessments_list]}

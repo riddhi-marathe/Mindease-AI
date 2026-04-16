@@ -1,104 +1,514 @@
 {% extends "base.html" %}
 
 {% block title %}Dashboard - MindEase{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block page_title %}Mental Wellness Dashboard{% endblock %}
 
 {% block content %}
-<div class="py-8 px-6 space-y-8 bg-gray-50 min-h-[calc(100vh-12rem)]">
-    <!-- Welcome Heading -->
-    <div class="text-center">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Good morning, Alex</h1>
-        <p class="text-xl text-gray-600">Here's what's happening with your wellness today.</p>
+<style>
+    :root {
+        --bg-light: #F5F7FA;
+        --accent-primary: #00BFA5;
+        --accent-light: rgba(0, 191, 165, 0.1);
+        --text-primary: #334155;
+        --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        --card-border: 1px solid rgba(255, 255, 255, 0.3);
+        --border-radius: 24px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --spacing-lg: 32px;
+        --spacing-md: 16px;
+        --spacing-sm: 8px;
+    }
+
+    body.dark-mode {
+        --bg-light: #1a1a1a;
+        --text-primary: #E2E8F0;
+    }
+
+    .dashboard-container {
+        padding: var(--spacing-lg);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-lg);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .dashboard-title {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -1px;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        gap: var(--spacing-md);
+    }
+
+    .dashboard-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 12px;
+        background-color: rgba(0, 0, 0, 0.04);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: var(--transition);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .dashboard-btn:hover {
+        background-color: var(--accent-light);
+        color: var(--accent-primary);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .stat-card {
+        background-color: #FFFFFF;
+        border: var(--card-border);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-lg);
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        overflow: hidden;
+        position: relative;
+    }
+
+    body.dark-mode .stat-card {
+        background-color: #2d2d2d;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .stat-card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(51, 65, 85, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    body.dark-mode .stat-card-title {
+        color: rgba(226, 232, 240, 0.6);
+    }
+
+    .stat-card-content {
+        text-align: center;
+    }
+
+    .stat-card-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--accent-primary);
+        line-height: 1;
+    }
+
+    .stat-card-label {
+        font-size: 12px;
+        color: rgba(51, 65, 85, 0.6);
+        margin-top: var(--spacing-sm);
+    }
+
+    body.dark-mode .stat-card-label {
+        color: rgba(226, 232, 240, 0.6);
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .chat-container {
+        background-color: #FFFFFF;
+        border: var(--card-border);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-lg);
+        box-shadow: var(--card-shadow);
+        display: flex;
+        flex-direction: column;
+        height: 400px;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    body.dark-mode .chat-container {
+        background-color: #2d2d2d;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        padding-bottom: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .message {
+        display: flex;
+        gap: var(--spacing-md);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message-content {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 16px;
+        font-size: 14px;
+        line-height: 1.5;
+        word-wrap: break-word;
+    }
+
+    .message.user .message-content {
+        background-color: rgba(51, 65, 85, 0.1);
+        color: var(--text-primary);
+        border-radius: 16px 4px 16px 16px;
+    }
+
+    body.dark-mode .message.user .message-content {
+        background-color: rgba(226, 232, 240, 0.1);
+    }
+
+    .message.ai .message-content {
+        background-color: var(--accent-primary);
+        color: white;
+        border-radius: 4px 16px 16px 16px;
+        font-weight: 500;
+    }
+
+    .chat-input-wrapper {
+        display: flex;
+        gap: var(--spacing-sm);
+    }
+
+    .chat-input {
+        flex: 1;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        transition: var(--transition);
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    body.dark-mode .chat-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+
+    .chat-input:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .chat-send-btn {
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: 12px;
+        background-color: var(--accent-primary);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: var(--transition);
+    }
+
+    .chat-send-btn:hover {
+        background-color: #00897B;
+        transform: scale(1.05);
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .chart-card {
+        background-color: #FFFFFF;
+        border: var(--card-border);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-lg);
+        box-shadow: var(--card-shadow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+    body.dark-mode .chart-card {
+        background-color: #2d2d2d;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .chart-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: var(--spacing-md);
+        width: 100%;
+        text-align: left;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .dashboard-actions {
+            margin-top: var(--spacing-md);
+            width: 100%;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .dashboard-title {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Welcome Back 👋</h1>
+        <div class="dashboard-actions">
+            <button class="dashboard-btn">📥 Export Report</button>
+            <button class="dashboard-btn">⚙️ Settings</button>
+        </div>
     </div>
 
-    <!-- Quick Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Mood Score -->
-        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-            <div class="w-20 h-20 bg-gradient-to-br from-teal-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg viewBox="0 0 36 36" fill="white" class="w-12 h-12">
-                    <circle cx="18" cy="18" r="16" fill="transparent" stroke="white" stroke-width="2" stroke-dasharray="100.53" stroke-dashoffset="22.53" stroke-linecap="round"/>
-                    <path d="M18 8c2.21 0 4 1.79 4 4s-1.79 4 -4 4 -4 -1.79 -4 -4 1.79 -4 4 -4zM8 18c0 -4.42 3.58 -8 8 -8s8 3.58 8 8 -3.58 8 -8 8 -8 -3.58 -8 -8z" fill="white"/>
-                </svg>
+    <!-- STATS GRID -->
+    <div class="stats-grid">
+        <!-- Mood Card -->
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-card-title">Mood Score</span>
+                <div style="font-size: 20px;">😊</div>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-1">Mood Score</h3>
-            <p class="text-3xl font-bold text-teal-500 mb-2">78/100</p>
-            <p class="text-sm text-gray-500">Doing great today</p>
+            <div class="stat-card-content">
+                <svg style="width: 120px; height: 120px;" viewBox="0 0 120 120" aria-label="Mood score: 78 out of 100">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0, 0, 0, 0.1)" stroke-width="4"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#00BFA5" stroke-width="4"
+                        stroke-dasharray="267.84 282.6" stroke-dashoffset="0"
+                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                    <text x="60" y="65" text-anchor="middle" font-size="24" font-weight="bold" fill="#00BFA5">78</text>
+                </svg>
+                <p class="stat-card-label">Out of 100</p>
+            </div>
         </div>
 
-        <!-- Daily Streak -->
-        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-            <div class="w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg viewBox="0 0 24 24" fill="white" class="w-12 h-12">
-                    <path d="M18 13h-.68l-2 2h1.91l.9-.9M6.34 7.91L9.91 4.34 11.09 5.52l-2 2M19.66 16.09L16.09 19.66l1.57 1.57 2-2M4.34 16.09L7.91 19.66L6.83 20.74l-2-2M11.91 19.66l3.57 -3.57L19.66 16.09"/>
-                </svg>
+        <!-- Streak Card -->
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-card-title">Daily Streak</span>
+                <div style="font-size: 20px;">🔥</div>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-1">Daily Streak</h3>
-            <p class="text-3xl font-bold text-orange-500 mb-2">5 Days</p>
-            <p class="text-sm text-gray-500">Keep it up!</p>
+            <div class="stat-card-content">
+                <div class="stat-card-value">5</div>
+                <p class="stat-card-label">Days Check-in</p>
+            </div>
         </div>
 
-        <!-- Screenings Completed -->
-        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-            <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg viewBox="0 0 24 24" fill="white" class="w-12 h-12">
-                    <path d="M5 13l4 4L19 7"/>
-                </svg>
+        <!-- Screenings Card -->
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-card-title">Screenings</span>
+                <div style="font-size: 20px;">✅</div>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-1">Screenings</h3>
-            <p class="text-3xl font-bold text-green-500 mb-2">12</p>
-            <p class="text-sm text-gray-500">Completed</p>
+            <div class="stat-card-content">
+                <div class="stat-card-value">12</div>
+                <p class="stat-card-label">Completed</p>
+            </div>
         </div>
 
-        <!-- Daily Mood Donut -->
-        <div class="bg-white rounded-3xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-            <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg viewBox="0 0 36 36" fill="white" class="w-12 h-12">
-                    <circle cx="18" cy="18" r="16" fill="transparent" stroke="white" stroke-width="3" stroke-dasharray="75" stroke-dashoffset="19" stroke-linecap="round"/>
-                    <circle cx="18" cy="18" r="11" fill="white"/>
+        <!-- Weekly Mood Card -->
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-card-title">This Week</span>
+                <div style="font-size: 20px;">📊</div>
+            </div>
+            <div class="stat-card-content">
+                <svg style="width: 140px; height: 140px;" viewBox="0 0 140 140" aria-label="Weekly mood distribution">
+                    <circle cx="70" cy="70" r="45" fill="none" stroke="#00BFA5" stroke-width="8" stroke-dasharray="70.65 139.23"/>
+                    <circle cx="70" cy="70" r="45" fill="none" stroke="#FFB400" stroke-width="8" stroke-dasharray="35.31 139.23" stroke-dashoffset="-70.65"/>
+                    <circle cx="70" cy="70" r="45" fill="none" stroke="#FF6B6B" stroke-width="8" stroke-dasharray="33.26 139.23" stroke-dashoffset="-105.96"/>
+                    <circle cx="70" cy="70" r="20" fill="white"/>
                 </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-1">Daily Mood</h3>
-            <p class="text-3xl font-bold text-purple-500 mb-2">Positive</p>
-            <p class="text-sm text-gray-500">Mostly positive</p>
-        </div>
-    </div>
-
-    <!-- Chat Interface Preview -->
-    <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
-        <h3 class="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-            <i data-lucide="message-circle" class="w-8 h-8 mr-3 text-teal-500"></i>
-            Chat Interface Preview
-        </h3>
-        <div class="space-y-4 max-w-2xl mx-auto">
-            <div class="flex justify-start">
-                <div class="bg-gray-200 rounded-2xl rounded-br-sm p-4 max-w-xs">
-                    <p>I've been feeling anxious today.</p>
-                </div>
-            </div>
-            <div class="flex justify-end">
-                <div class="bg-teal-500 text-white rounded-2xl rounded-bl-sm p-4 max-w-xs">
-                    <p>I'm here to listen. Can you tell me more about what's causing the anxiety?</p>
-                </div>
+                <p class="stat-card-label">Balanced week</p>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Control Bar -->
-    <div class="bg-white border-t border-gray-200 p-6 rounded-t-3xl shadow-2xl fixed bottom-0 left-[16rem] right-0">
-        <div class="flex gap-3 max-w-2xl mx-auto">
-            <input type="text" placeholder="Type your message..." class="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-            <button class="px-6 py-3 bg-teal-500 text-white rounded-2xl font-medium hover:bg-teal-600 transition flex-shrink-0 shadow-lg">
-                Send
-            </button>
+    <!-- CHAT PREVIEW -->
+    <h2 class="section-title">💬 Quick Chat with AI Support</h2>
+    <div class="chat-container">
+        <div class="chat-messages">
+            <div class="message ai">
+                <div class="message-content">Hello! I'm here to support your mental wellness journey. What's on your mind today?</div>
+            </div>
+            <div class="message user">
+                <div class="message-content">I'm feeling stressed about work deadlines.</div>
+            </div>
+            <div class="message ai">
+                <div class="message-content">That's a common concern. Let's explore stress management techniques. 🌿</div>
+            </div>
         </div>
-        <button class="ml-auto mt-4 px-8 py-3 bg-red-400 text-white rounded-2xl font-semibold hover:bg-red-500 transition shadow-xl absolute bottom-6 right-6 text-lg">
-            Emergency Help
-        </button>
+        <div class="chat-input-wrapper">
+            <input type="text" class="chat-input" placeholder="Share your thoughts..." aria-label="Chat input">
+            <button class="chat-send-btn" aria-label="Send message">📤</button>
+        </div>
+    </div>
+
+    <!-- CHARTS SECTION -->
+    <h2 class="section-title">📈 Your Wellness Metrics (SDG 3: Good Health & Well-being)</h2>
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3 class="chart-title">Sleep Patterns</h3>
+            <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
+                <polyline points="10,80 50,70 90,60 130,75 170,55 190,65" fill="none" stroke="#00BFA5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 10,80 L 50,70 L 90,60 L 130,75 L 170,55 L 190,65 L 190,100 L 10,100" fill="#00BFA5" opacity="0.1"/>
+            </svg>
+        </div>
+        <div class="chart-card">
+            <h3 class="chart-title">Anxiety Levels</h3>
+            <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
+                <polyline points="10,50 50,55 90,45 130,60 170,40 190,50" fill="none" stroke="#FFB400" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 10,50 L 50,55 L 90,45 L 130,60 L 170,40 L 190,50 L 190,100 L 10,100" fill="#FFB400" opacity="0.1"/>
+            </svg>
+        </div>
+        <div class="chart-card">
+            <h3 class="chart-title">Energy Flow</h3>
+            <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
+                <polyline points="10,40 50,65 90,30 130,70 170,35 190,55" fill="none" stroke="#00BFA5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 10,40 L 50,65 L 90,30 L 130,70 L 170,35 L 190,55 L 190,100 L 10,100" fill="#00BFA5" opacity="0.1"/>
+            </svg>
+        </div>
     </div>
 </div>
 
 <script>
-    lucide.createIcons();
+    // Dark mode integration with existing theme
+    function initDashboard() {
+        const chatInput = document.querySelector('.chat-input');
+        const chatSendBtn = document.querySelector('.chat-send-btn');
+        const chatMessages = document.querySelector('.chat-messages');
+
+        if (chatSendBtn) {
+            chatSendBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user';
+            userMessageDiv.innerHTML = `<div class="message-content">${escapeHtml(message)}</div>`;
+            chatMessages.appendChild(userMessageDiv);
+
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai';
+                const responses = [
+                    'That sounds important. How are you feeling about it?',
+                    'I appreciate you sharing. Let\'s explore this together. 🌿',
+                    'You\'re doing great! Remember to be kind to yourself. 💚',
+                    'What small step could help you right now?'
+                ];
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                aiMessageDiv.innerHTML = `<div class="message-content">${response}</div>`;
+                chatMessages.appendChild(aiMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
 {% endblock %}

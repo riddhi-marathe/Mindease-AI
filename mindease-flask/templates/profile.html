@@ -1,9 +1,593 @@
 {% extends "base.html" %}
 
 {% block title %}Profile - MindEase{% endblock %}
-{% block page_title %}My Profile{% endblock %}
+{% block page_title %}My Profile & Health Analytics{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<style>
+    .swipe-card-container {
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        display: flex;
+        gap: 1rem;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    .swipe-card {
+        flex: 0 0 calc(50% - 0.5rem);
+        min-width: 250px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .swipe-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    }
+    @media (min-width: 768px) {
+        .swipe-card {
+            flex: 0 0 calc(33.333% - 0.67rem);
+        }
+    }
+    .progress-ring {
+        transition: stroke-dashoffset 0.35s;
+        stroke-dasharray: 339.29;
+        stroke-dashoffset: 0;
+    }
+    .health-score {
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+    <!-- Profile Header with Health Score -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Profile Information -->
+        <div class="md:col-span-2 bg-gradient-to-r from-teal-50 to-blue-50 rounded-lg p-6 border border-teal-200">
+            <div class="flex items-start space-x-4">
+                <i data-lucide="user" class="w-8 h-8 text-teal-600 mt-1"></i>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ user.username }}'s Health Dashboard</h3>
+                    <p class="text-sm text-gray-700">Monitor your health metrics and wellness progress</p>
+                    <p class="text-xs text-gray-500 mt-2">Member since {{ user.created_at.strftime('%B %Y') if user.created_at else 'N/A' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall Health Score -->
+        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-teal-600">
+            <h4 class="text-sm font-semibold text-gray-700 mb-3">Overall Health Score</h4>
+            <svg width="150" height="150" viewBox="0 0 120 120" class="mx-auto">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#7ECBA3" stroke-width="8" class="progress-ring" id="healthScoreRing" style="stroke-dashoffset: 0;"/>
+                <text x="60" y="65" text-anchor="middle" class="health-score" id="healthScoreText">78%</text>
+            </svg>
+            <p class="text-center text-sm text-gray-600 mt-2">Very Good</p>
+        </div>
+    </div>
+
+    <!-- Account Information Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="user-check" class="w-6 h-6 mr-2 text-teal-600"></i>
+            Account Information
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <div class="flex items-center px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
+                    <span class="text-gray-900">{{ user.username }}</span>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <div class="flex items-center px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
+                    <span class="text-gray-900">{{ user.email }}</span>
+                </div>
+            </div>
+            <div>
+                <label for="profileAge" class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                <input type="number" id="profileAge" value="{{ user.age or '' }}" min="1" max="120" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+            </div>
+            <div>
+                <label for="profileGender" class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                <select id="profileGender" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    <option value="">Select gender</option>
+                    <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                    <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+                    <option value="prefer-not-to-say" {% if user.gender == 'prefer-not-to-say' %}selected{% endif %}>Prefer not to say</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <label for="medicalHistory" class="block text-sm font-medium text-gray-700 mb-2">Medical History</label>
+            <textarea id="medicalHistory" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Enter any relevant medical history...">{{ user.medical_history or '' }}</textarea>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button onclick="updateProfile()" class="bg-teal-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-700 transition duration-200 flex items-center">
+                <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                Save Changes
+            </button>
+        </div>
+
+        <div id="profileSuccess" class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg hidden">
+            <p class="text-green-800 text-sm flex items-center">
+                <i data-lucide="check-circle" class="w-4 h-4 mr-2"></i>
+                Profile updated successfully!
+            </p>
+        </div>
+    </div>
+
+    <!-- Health Statistics Dashboard -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+            <i data-lucide="clipboard-check" class="w-8 h-8 text-blue-600 mb-2"></i>
+            <h4 class="font-semibold text-gray-900">Assessments</h4>
+            <p class="text-3xl font-bold text-blue-600 mt-1" id="assessmentsCount">0</p>
+            <p class="text-xs text-gray-600 mt-1">Health checks completed</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+            <i data-lucide="heart" class="w-8 h-8 text-green-600 mb-2"></i>
+            <h4 class="font-semibold text-gray-900">Wellness Logs</h4>
+            <p class="text-3xl font-bold text-green-600 mt-1" id="wellnessLogsCount">0</p>
+            <p class="text-xs text-gray-600 mt-1">Wellness entries recorded</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+            <i data-lucide="activity" class="w-8 h-8 text-purple-600 mb-2"></i>
+            <h4 class="font-semibold text-gray-900">Health Metrics</h4>
+            <p class="text-3xl font-bold text-purple-600 mt-1" id="metricsCount">0</p>
+            <p class="text-xs text-gray-600 mt-1">Metrics tracked</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+            <i data-lucide="flame" class="w-8 h-8 text-orange-600 mb-2"></i>
+            <h4 class="font-semibold text-gray-900">Wellness Streak</h4>
+            <p class="text-3xl font-bold text-orange-600 mt-1" id="streakCount">7</p>
+            <p class="text-xs text-gray-600 mt-1">Days active</p>
+        </div>
+    </div>
+
+    <!-- Health Progress Indicators -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="trendingup" class="w-6 h-6 mr-2 text-teal-600"></i>
+            Health Progress Indicators
+        </h3>
+
+        <div class="space-y-6">
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Fitness Level</span>
+                    <span class="text-sm font-semibold text-teal-600" id="fitnessPercent">75%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-teal-500 to-teal-600 h-3 rounded-full" style="width: 75%; transition: width 0.3s ease;" id="fitnessBar"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Sleep Quality</span>
+                    <span class="text-sm font-semibold text-blue-600" id="sleepPercent">82%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full" style="width: 82%; transition: width 0.3s ease;" id="sleepBar"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Mental Wellbeing</span>
+                    <span class="text-sm font-semibold text-purple-600" id="mentalPercent">68%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full" style="width: 68%; transition: width 0.3s ease;" id="mentalBar"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Nutrition Score</span>
+                    <span class="text-sm font-semibold text-green-600" id="nutritionPercent">70%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full" style="width: 70%; transition: width 0.3s ease;" id="nutritionBar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i data-lucide="line-chart" class="w-5 h-5 mr-2 text-blue-600"></i>
+                Weekly Activity
+            </h3>
+            <div class="chart-container">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i data-lucide="pie-chart" class="w-5 h-5 mr-2 text-green-600"></i>
+                Health Distribution
+            </h3>
+            <div class="chart-container">
+                <canvas id="healthDistChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Issues Tracker -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="alert-circle" class="w-6 h-6 mr-2 text-orange-600"></i>
+            Health Issues & Severity Levels
+        </h3>
+
+        <div id="healthIssuesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Sample issue card -->
+            <div class="border-l-4 border-red-500 bg-red-50 p-4 rounded-lg">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">High Blood Pressure</h4>
+                        <p class="text-sm text-gray-600 mt-1">Severity: Critical</p>
+                    </div>
+                    <span class="px-2 py-1 bg-red-200 text-red-800 text-xs font-semibold rounded-full">⚠️ Critical</span>
+                </div>
+                <p class="text-xs text-gray-600 mt-2">Requires immediate attention</p>
+            </div>
+
+            <div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-lg">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Stress Levels</h4>
+                        <p class="text-sm text-gray-600 mt-1">Severity: Moderate</p>
+                    </div>
+                    <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs font-semibold rounded-full">⚠️ Moderate</span>
+                </div>
+                <p class="text-xs text-gray-600 mt-2">Consider relaxation techniques</p>
+            </div>
+
+            <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded-lg">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Sleep Pattern</h4>
+                        <p class="text-sm text-gray-600 mt-1">Severity: Low</p>
+                    </div>
+                    <span class="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded-full">✓ Good</span>
+                </div>
+                <p class="text-xs text-gray-600 mt-2">Maintaining healthy schedule</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Recommendations & Report -->
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6 border-l-4 border-indigo-600">
+        <div class="flex items-start space-x-4">
+            <div class="bg-indigo-100 p-3 rounded-lg">
+                <i data-lucide="stethoscope" class="w-6 h-6 text-indigo-600"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">👨‍⚕️ AI Doctor's Medical Report</h3>
+                <p class="text-sm text-gray-700 mb-4">Based on your health profile and recent activities, here are personalized recommendations:</p>
+                
+                <div id="doctorRecommendationsContainer" class="space-y-3">
+                    <div class="bg-white p-4 rounded-lg border border-indigo-200">
+                        <p class="text-sm"><strong>🏃 Fitness Recommendation:</strong> Increase daily walking to 10,000 steps. Your current activity is below optimal levels.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-indigo-200">
+                        <p class="text-sm"><strong>🥗 Nutrition Suggestion:</strong> Increase vegetable intake and maintain balanced macronutrients (proteins, carbs, fats).</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-indigo-200">
+                        <p class="text-sm"><strong>😴 Sleep Advice:</strong> Maintain consistent sleep schedule. Aim for 7-8 hours of quality sleep daily.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-indigo-200">
+                        <p class="text-sm"><strong>🧘 Mental Health:</strong> Consider meditation or yoga for stress management. Practice mindfulness for 15 mins daily.</p>
+                    </div>
+                </div>
+
+                <button onclick="generateDetailedReport()" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition duration-200 flex items-center">
+                    <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                    Download Full Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Protein & Nutrition Swipe Cards -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <i data-lucide="zap" class="w-6 h-6 mr-2 text-orange-600"></i>
+            Protein & Nutrition Recommendations
+        </h3>
+
+        <div class="swipe-card-container" id="proteinCardsContainer">
+            <!-- Protein cards will be generated dynamically -->
+            <div class="swipe-card bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-5 border border-orange-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Chicken Breast</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-orange-200 text-orange-800 px-2 py-1 rounded text-xs font-bold">31g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Lean protein, low fat</p>
+                    <p><strong>How to use:</strong> Grilled, baked, or pan-fried</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-5 border border-green-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Greek Yogurt</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs font-bold">10g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Probiotics, calcium</p>
+                    <p><strong>How to use:</strong> Breakfast, snacks, smoothies</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border border-blue-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Eggs</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs font-bold">13g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Complete amino acids</p>
+                    <p><strong>How to use:</strong> Boiled, fried, scrambled</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-5 border border-red-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Salmon</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-red-200 text-red-800 px-2 py-1 rounded text-xs font-bold">25g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Omega-3, heart health</p>
+                    <p><strong>How to use:</strong> Grilled, baked, smoked</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-5 border border-purple-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Lentils</h4>
+                        <p class="text-xs text-gray-600">Per 100g (cooked)</p>
+                    </div>
+                    <span class="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs font-bold">9g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Fiber, plant-based</p>
+                    <p><strong>How to use:</strong> Soups, salads, curries</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-4 text-center">💡 Swipe to see more protein recommendations</p>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <i data-lucide="activity" class="w-6 h-6 mr-2 text-teal-600"></i>
+            Recent Activity & History
+        </h3>
+
+        <div id="recentActivity" class="space-y-3">
+            <p class="text-gray-500 text-sm">Loading recent activity...</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    let activityChart, healthDistChart;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProfileStats();
+        loadRecentActivity();
+        initializeCharts();
+        updateHealthIndicators();
+    });
+
+    function updateProfile() {
+        const age = document.getElementById('profileAge').value;
+        const gender = document.getElementById('profileGender').value;
+        const medicalHistory = document.getElementById('medicalHistory').value;
+
+        const updateData = {};
+        if (age) updateData.age = parseInt(age);
+        if (gender) updateData.gender = gender;
+        updateData.medical_history = medicalHistory;
+
+        fetch('/api/user/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                const successDiv = document.getElementById('profileSuccess');
+                successDiv.classList.remove('hidden');
+                setTimeout(() => successDiv.classList.add('hidden'), 3000);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function loadProfileStats() {
+        fetch('/api/assessments')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('assessmentsCount').textContent = data.assessments ? data.assessments.length : 0;
+        })
+        .catch(() => document.getElementById('assessmentsCount').textContent = 0);
+
+        fetch('/api/wellness/logs')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('wellnessLogsCount').textContent = data.logs ? data.logs.length : 0;
+        })
+        .catch(() => document.getElementById('wellnessLogsCount').textContent = 0);
+
+        fetch('/api/health/metrics')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('metricsCount').textContent = data.metrics ? data.metrics.length : 0;
+        })
+        .catch(() => document.getElementById('metricsCount').textContent = 0);
+    }
+
+    function loadRecentActivity() {
+        Promise.all([
+            fetch('/api/assessments').then(r => r.json()),
+            fetch('/api/wellness/logs').then(r => r.json())
+        ])
+        .then(([assessmentsData, logsData]) => {
+            const activities = [];
+
+            if (assessmentsData.assessments) {
+                assessmentsData.assessments.slice(0, 3).forEach(assessment => {
+                    activities.push({
+                        type: 'assessment',
+                        title: `Health Assessment: ${assessment.assessment_type}`,
+                        date: new Date(assessment.created_at).toLocaleDateString(),
+                        icon: 'clipboard-check'
+                    });
+                });
+            }
+
+            if (logsData.logs) {
+                logsData.logs.slice(0, 3).forEach(log => {
+                    activities.push({
+                        type: 'wellness',
+                        title: 'Wellness Log Entry',
+                        date: new Date(log.created_at).toLocaleDateString(),
+                        icon: 'heart'
+                    });
+                });
+            }
+
+            const activityDiv = document.getElementById('recentActivity');
+            if (activities.length > 0) {
+                activityDiv.innerHTML = activities.map(activity => `
+                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <i data-lucide="${activity.icon}" class="w-5 h-5 text-teal-600"></i>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">${activity.title}</p>
+                            <p class="text-xs text-gray-500">${activity.date}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                activityDiv.innerHTML = '<p class="text-gray-500 text-sm">No recent activity found.</p>';
+            }
+
+            lucide.createIcons();
+        })
+        .catch(error => {
+            console.error('Error loading recent activity:', error);
+            document.getElementById('recentActivity').innerHTML = '<p class="text-gray-500 text-sm">Unable to load recent activity.</p>';
+        });
+    }
+
+    function initializeCharts() {
+        // Weekly Activity Chart
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        activityChart = new Chart(activityCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Activity (steps)',
+                    data: [8000, 9200, 7500, 10000, 8500, 9800, 7200],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, max: 12000 }
+                }
+            }
+        });
+
+        // Health Distribution Pie Chart
+        const healthDistCtx = document.getElementById('healthDistChart').getContext('2d');
+        healthDistChart = new Chart(healthDistCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Fitness', 'Sleep', 'Mental Health', 'Nutrition'],
+                datasets: [{
+                    data: [75, 82, 68, 70],
+                    backgroundColor: ['#3b82f6', '#7ecba3', '#a855f7', '#f97316'],
+                    borderColor: ['#1e40af', '#059669', '#7c3aed', '#ea580c'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, font: { size: 12 } }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateHealthIndicators() {
+        // Animate health score ring
+        const radius = 54;
+        const circumference = 2 * Math.PI * radius;
+        const healthScore = 78;
+        const offset = circumference - (healthScore / 100) * circumference;
+        document.getElementById('healthScoreRing').style.strokeDashoffset = offset;
+    }
+
+    function generateDetailedReport() {
+        alert('Generating detailed PDF report... (Feature in development)');
+    }
+</script>
+
 <div class="max-w-4xl mx-auto space-y-6">
     <!-- Profile Header -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">

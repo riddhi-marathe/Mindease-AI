@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindEase - Mental Wellness Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-light: #F5F7FA;
+            --bg-dark: #1a1a1a;
+            --accent-primary: #00BFA5;
+            --accent-light: rgba(0, 191, 165, 0.1);
+            --text-primary: #334155;
+            --text-dark-mode: #E2E8F0;
+            --sidebar-bg: #FFFFFF;
+            --sidebar-dark: #2d2d2d;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --card-border: 1px solid rgba(255, 255, 255, 0.3);
+            --emergency-red: #FF6B6B;
+            --spacing-lg: 32px;
+            --spacing-md: 16px;
+            --spacing-sm: 8px;
+            --border-radius: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark-mode);
+        }
+
+        /* ==================== LAYOUT ==================== */
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            gap: 0;
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            padding: var(--spacing-lg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .sidebar {
+            background-color: var(--sidebar-dark);
+            border-right-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-mode .logo {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-primary), #00897B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            margin-bottom: auto;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        body.dark-mode .nav-link {
+            color: var(--text-dark-mode);
+        }
+
+        .nav-link:hover {
+            background-color: rgba(0, 191, 165, 0.08);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background-color: var(--accent-light);
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--accent-primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-mode .sidebar-footer {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            background-color: rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 20px;
+        }
+
+        body.dark-mode .theme-toggle {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(0, 191, 165, 0.1);
+        }
+
+        /* ==================== MAIN CONTENT ==================== */
+        .main-content {
+            margin-left: 280px;
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* ==================== HEADER ==================== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-mode .header {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .header-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            background-color: rgba(0, 0, 0, 0.04);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body.dark-mode .header-button {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-dark-mode);
+        }
+
+        .header-button:hover {
+            background-color: var(--accent-light);
+            color: var(--accent-primary);
+        }
+
+        /* ==================== STATS GRID ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .stat-card {
+            background-color: var(--sidebar-bg);
+            border: var(--card-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.dark-mode .stat-card {
+            background-color: var(--sidebar-dark);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(51, 65, 85, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        body.dark-mode .stat-card-title {
+            color: rgba(226, 232, 240, 0.6);
+        }
+
+        .stat-card-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-card-content {
+            text-align: center;
+        }
+
+        .stat-card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            line-height: 1;
+        }
+
+        .stat-card-label {
+            font-size: 12px;
+            color: rgba(51, 65, 85, 0.6);
+            margin-top: var(--spacing-sm);
+        }
+
+        body.dark-mode .stat-card-label {
+            color: rgba(226, 232, 240, 0.6);
+        }
+
+        /* ==================== SKELETON LOADING ==================== */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                rgba(0, 0, 0, 0.08) 0%,
+                rgba(0, 0, 0, 0.12) 50%,
+                rgba(0, 0, 0, 0.08) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        body.dark-mode .skeleton {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.12) 50%,
+                rgba(255, 255, 255, 0.08) 100%
+            );
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .stat-card.skeleton {
+            pointer-events: none;
+        }
+
+        /* ==================== CHAT PREVIEW ==================== */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .chat-container {
+            background-color: var(--sidebar-bg);
+            border: var(--card-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        body.dark-mode .chat-container {
+            background-color: var(--sidebar-dark);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .message {
+            display: flex;
+            gap: var(--spacing-md);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background-color: rgba(51, 65, 85, 0.1);
+            color: var(--text-primary);
+            border-radius: 16px 4px 16px 16px;
+        }
+
+        body.dark-mode .message.user .message-content {
+            background-color: rgba(226, 232, 240, 0.1);
+            color: var(--text-dark-mode);
+        }
+
+        .message.ai .message-content {
+            background-color: var(--accent-primary);
+            color: white;
+            border-radius: 4px 16px 16px 16px;
+            font-weight: 500;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .chat-input {
+            flex: 1;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: var(--transition);
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        body.dark-mode .chat-input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-dark-mode);
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .chat-send-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            background-color: var(--accent-primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .chat-send-btn:hover {
+            background-color: #00897B;
+            transform: scale(1.05);
+        }
+
+        /* ==================== CHARTS SECTION ==================== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .chart-card {
+            background-color: var(--sidebar-bg);
+            border: var(--card-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .chart-card {
+            background-color: var(--sidebar-dark);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            width: 100%;
+            text-align: left;
+        }
+
+        /* ==================== SVG CHARTS ==================== */
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .circular-progress {
+            width: 120px;
+            height: 120px;
+        }
+
+        .donut-chart {
+            width: 140px;
+            height: 140px;
+        }
+
+        /* ==================== EMERGENCY BUTTON ==================== */
+        .emergency-btn {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: var(--emergency-red);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            transition: var(--transition);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .emergency-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
+        }
+
+        .emergency-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Tooltip for Emergency Button */
+        .emergency-tooltip {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            background-color: var(--emergency-red);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .emergency-btn:hover .emergency-tooltip {
+            opacity: 1;
+            transform: translateY(-8px);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                padding: var(--spacing-md);
+                justify-content: space-between;
+            }
+
+            .nav-links {
+                display: flex;
+                gap: var(--spacing-md);
+                margin-bottom: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: var(--spacing-md);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .emergency-btn {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+                bottom: 24px;
+                right: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .nav-links {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .main-content {
+                padding: var(--spacing-md);
+            }
+
+            .emergency-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        /* ==================== SCROLLBAR STYLING ==================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 191, 165, 0.4);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 191, 165, 0.6);
+        }
+
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🧠</div>
+                <div class="logo-text">MindEase</div>
+            </div>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">🏠 Home</a></li>
+                    <li><a href="/dashboard" class="nav-link active">📊 Dashboard</a></li>
+                    <li><a href="/chat" class="nav-link">💬 Chat</a></li>
+                    <li><a href="/tracker" class="nav-link">📈 Tracker</a></li>
+                    <li><a href="/screening" class="nav-link">🔍 Screenings</a></li>
+                    <li><a href="/mental-check" class="nav-link">📚 Resources</a></li>
+                    <li><a href="/profile" class="nav-link">👤 Profile</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+                    ☀️
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- HEADER -->
+            <div class="header">
+                <h1 class="header-title">Welcome Back, Sarah 👋</h1>
+                <div class="header-actions">
+                    <button class="header-button">📥 Export Report</button>
+                    <button class="header-button">⚙️ Settings</button>
+                </div>
+            </div>
+
+            <!-- STATS GRID -->
+            <div class="stats-grid">
+                <!-- Mood Card -->
+                <div class="stat-card" id="moodCard">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">Mood Score</span>
+                        <div class="stat-card-icon">😊</div>
+                    </div>
+                    <div class="stat-card-content">
+                        <svg class="circular-progress" viewBox="0 0 120 120" aria-label="Mood score: 78 out of 100">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0, 0, 0, 0.1)" stroke-width="4"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#00BFA5" stroke-width="4"
+                                stroke-dasharray="267.84 282.6" stroke-dashoffset="0"
+                                stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                            <text x="60" y="65" text-anchor="middle" font-size="24" font-weight="bold" fill="#00BFA5">78</text>
+                        </svg>
+                        <p class="stat-card-label">Out of 100</p>
+                    </div>
+                </div>
+
+                <!-- Streak Card -->
+                <div class="stat-card" id="streakCard">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">Daily Streak</span>
+                        <div class="stat-card-icon">🔥</div>
+                    </div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-value">5</div>
+                        <p class="stat-card-label">Days Check-in</p>
+                    </div>
+                </div>
+
+                <!-- Screenings Card -->
+                <div class="stat-card" id="screeningCard">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">Screenings</span>
+                        <div class="stat-card-icon">✅</div>
+                    </div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-value">12</div>
+                        <p class="stat-card-label">Completed</p>
+                    </div>
+                </div>
+
+                <!-- Daily Mood Card -->
+                <div class="stat-card" id="dailyMoodCard">
+                    <div class="stat-card-header">
+                        <span class="stat-card-title">This Week</span>
+                        <div class="stat-card-icon">📊</div>
+                    </div>
+                    <div class="stat-card-content">
+                        <svg class="donut-chart" viewBox="0 0 140 140" aria-label="Weekly mood distribution">
+                            <circle cx="70" cy="70" r="45" fill="none" stroke="#00BFA5" stroke-width="8" stroke-dasharray="70.65 139.23"/>
+                            <circle cx="70" cy="70" r="45" fill="none" stroke="#FFB400" stroke-width="8" stroke-dasharray="35.31 139.23" stroke-dashoffset="-70.65"/>
+                            <circle cx="70" cy="70" r="45" fill="none" stroke="#FF6B6B" stroke-width="8" stroke-dasharray="33.26 139.23" stroke-dashoffset="-105.96"/>
+                            <circle cx="70" cy="70" r="20" fill="white"/>
+                        </svg>
+                        <p class="stat-card-label">Balanced week</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHAT PREVIEW -->
+            <div>
+                <h2 class="section-title">💬 Quick Chat</h2>
+                <div class="chat-container">
+                    <div class="chat-messages">
+                        <div class="message ai">
+                            <div class="message-content">Hello! I'm here to support your mental wellness journey. What's on your mind today?</div>
+                        </div>
+                        <div class="message user">
+                            <div class="message-content">I'm feeling a bit stressed about work deadlines.</div>
+                        </div>
+                        <div class="message ai">
+                            <div class="message-content">That's a common concern. Let's explore some stress management techniques that might help you feel more in control. 🌿</div>
+                        </div>
+                    </div>
+                    <div class="chat-input-wrapper">
+                        <input type="text" class="chat-input" placeholder="Share your thoughts..." aria-label="Chat input">
+                        <button class="chat-send-btn" aria-label="Send message">📤</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS SECTION -->
+            <h2 class="section-title">📈 Your Wellness Metrics</h2>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">Sleep Patterns</h3>
+                    <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
+                        <polyline points="10,80 50,70 90,60 130,75 170,55 190,65" fill="none" stroke="#00BFA5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M 10,80 L 50,70 L 90,60 L 130,75 L 170,55 L 190,65 L 190,100 L 10,100" fill="#00BFA5" opacity="0.1"/>
+                    </svg>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">Anxiety Levels</h3>
+                    <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
+                        <polyline points="10,50 50,55 90,45 130,60 170,40 190,50" fill="none" stroke="#FFB400" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M 10,50 L 50,55 L 90,45 L 130,60 L 170,40 L 190,50 L 190,100 L 10,100" fill="#FFB400" opacity="0.1"/>
+                    </svg>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">Energy Flow</h3>
+                    <svg viewBox="0 0 200 100" style="width: 100%; height: 100px;">
+                        <polyline points="10,40 50,65 90,30 130,70 170,35 190,55" fill="none" stroke="#00BFA5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M 10,40 L 50,65 L 90,30 L 130,70 L 170,35 L 190,55 L 190,100 L 10,100" fill="#00BFA5" opacity="0.1"/>
+                    </svg>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- EMERGENCY HELP BUTTON -->
+    <button class="emergency-btn" id="emergencyBtn" aria-label="Emergency Help - Crisis Support">
+        <span class="emergency-tooltip">🆘 Emergency Help</span>
+        🆘
+    </button>
+
+    <script>
+        // ==================== DARK MODE TOGGLE ====================
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Check for saved preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            themeToggle.textContent = isDarkMode ? '🌙' : '☀️';
+        });
+
+        // ==================== SKELETON LOADING ====================
+        function showSkeletonLoad() {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.classList.add('skeleton');
+            });
+        }
+
+        function hideSkeletonLoad() {
+            const statCards = document.querySelectorAll('.stat-card');
+            setTimeout(() => {
+                statCards.forEach(card => {
+                    card.classList.remove('skeleton');
+                });
+            }, 1500);
+        }
+
+        // Show skeleton on page load
+        window.addEventListener('load', () => {
+            showSkeletonLoad();
+            hideSkeletonLoad();
+        });
+
+        // ==================== EMERGENCY BUTTON ====================
+        const emergencyBtn = document.getElementById('emergencyBtn');
+        emergencyBtn.addEventListener('click', () => {
+            alert('🆘 EMERGENCY MENTAL HEALTH SUPPORT\n\nImmediate Resources:\n\n📞 988 - Suicide & Crisis Lifeline (US)\n☎️ 1-800-950-NAMI (6264) - Mental Health Crisis\n🌍 International Association for Suicide Prevention\n\nYou are NOT alone. Help is available 24/7.\nReach out now. You matter. 💚');
+        });
+
+        // ==================== CHAT FUNCTIONALITY ====================
+        const chatInput = document.querySelector('.chat-input');
+        const chatSendBtn = document.querySelector('.chat-send-btn');
+        const chatMessages = document.querySelector('.chat-messages');
+
+        chatSendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user';
+            userMessageDiv.innerHTML = `<div class="message-content">${escapeHtml(message)}</div>`;
+            chatMessages.appendChild(userMessageDiv);
+
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulate AI response
+            setTimeout(() => {
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai';
+                const responses = [
+                    'That sounds important. How are you feeling about it?',
+                    'I appreciate you sharing that. Let\'s explore this together. 🌿',
+                    'Thank you for opening up. Remember, you\'re doing great! 💚',
+                    'That\'s a valuable insight. What small step could help?',
+                    'I\'m here to listen. Tell me more about what\'s happening.',
+                    'Your feelings are valid. How can I support you right now?'
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                aiMessageDiv.innerHTML = `<div class="message-content">${randomResponse}</div>`;
+                chatMessages.appendChild(aiMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== ACCESSIBILITY & PERFORMANCE ====================
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                chatInput.blur();
+            }
+        });
+
+        // High contrast mode check (SDG 3 - Accessibility)
+        const prefersHighContrast = window.matchMedia('(prefers-contrast: more)').matches;
+        if (prefersHighContrast) {
+            document.documentElement.style.setProperty('--text-primary', '#000000');
+            document.documentElement.style.setProperty('--accent-primary', '#0066CC');
+        }
+
+        // Reduced motion support
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            document.documentElement.style.setProperty('--transition', 'none');
+        }
+
+        // ==================== PERFORMANCE MONITORING ====================
+        // Log when all resources are loaded
+        window.addEventListener('load', () => {
+            console.log('✅ Mental Wellness Dashboard loaded successfully');
+            console.log('SDG 3: Good Health and Well-being - Promoting mental health awareness');
+        });
+    </script>
+</body>
+</html>

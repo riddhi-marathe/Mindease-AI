@@ -211,4 +211,174 @@
         contentDiv.innerHTML = html;
     }
 </script>
+
+    <!-- Protein & Nutrition Swipe Cards -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <i data-lucide="zap" class="w-6 h-6 mr-2 text-orange-600"></i>
+            Daily Protein & Nutrition Tips
+        </h3>
+
+        <style>
+            .swipe-card-container {
+                overflow-x: auto;
+                scroll-behavior: smooth;
+                display: flex;
+                gap: 1rem;
+                padding-bottom: 0.5rem;
+                -webkit-overflow-scrolling: touch;
+            }
+            .swipe-card {
+                flex: 0 0 calc(50% - 0.5rem);
+                min-width: 250px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            .swipe-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            }
+        </style>
+
+        <div class="swipe-card-container">
+            <div class="swipe-card bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-5 border border-orange-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Chicken Breast</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-orange-200 text-orange-800 px-2 py-1 rounded text-xs font-bold">31g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Lean protein, low fat</p>
+                    <p><strong>How to use:</strong> Grilled, baked, or pan-fried</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-5 border border-green-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Greek Yogurt</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs font-bold">10g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Probiotics, calcium</p>
+                    <p><strong>How to use:</strong> Breakfast, snacks, smoothies</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border border-blue-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Eggs</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs font-bold">13g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Complete amino acids</p>
+                    <p><strong>How to use:</strong> Boiled, fried, scrambled</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-5 border border-red-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Salmon</h4>
+                        <p class="text-xs text-gray-600">Per 100g</p>
+                    </div>
+                    <span class="bg-red-200 text-red-800 px-2 py-1 rounded text-xs font-bold">25g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Omega-3, heart health</p>
+                    <p><strong>How to use:</strong> Grilled, baked, smoked</p>
+                </div>
+            </div>
+
+            <div class="swipe-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-5 border border-purple-200">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Lentils</h4>
+                        <p class="text-xs text-gray-600">Per 100g (cooked)</p>
+                    </div>
+                    <span class="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs font-bold">9g Protein</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Benefits:</strong> Fiber, plant-based</p>
+                    <p><strong>How to use:</strong> Soups, salads, curries</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-4 text-center">💡 Swipe to see more protein recommendations</p>
+    </div>
+
+    <!-- AI Doctor's Medical Report -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <i data-lucide="activity" class="w-6 h-6 mr-2 text-red-600"></i>
+            Doctor's AI Recommendations
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Fitness Recommendation -->
+            <div class="border-l-4 border-blue-600 bg-blue-50 p-4 rounded-r-lg">
+                <div class="flex items-start gap-3">
+                    <div class="bg-blue-200 p-2 rounded-full">
+                        <i data-lucide="zap" class="w-5 h-5 text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Fitness Goal</h4>
+                        <p class="text-sm text-gray-700 mt-1">Aim for 30 minutes of moderate exercise daily. Include cardio and strength training for optimal health.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nutrition Recommendation -->
+            <div class="border-l-4 border-green-600 bg-green-50 p-4 rounded-r-lg">
+                <div class="flex items-start gap-3">
+                    <div class="bg-green-200 p-2 rounded-full">
+                        <i data-lucide="apple" class="w-5 h-5 text-green-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Nutrition</h4>
+                        <p class="text-sm text-gray-700 mt-1">Maintain a balanced diet with 5+ portions of fruits and vegetables daily. Stay hydrated with adequate water intake.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sleep Recommendation -->
+            <div class="border-l-4 border-purple-600 bg-purple-50 p-4 rounded-r-lg">
+                <div class="flex items-start gap-3">
+                    <div class="bg-purple-200 p-2 rounded-full">
+                        <i data-lucide="moon" class="w-5 h-5 text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Sleep Health</h4>
+                        <p class="text-sm text-gray-700 mt-1">Maintain 7-9 hours of sleep daily. Establish a consistent sleep schedule and avoid screens before bedtime.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mental Health Recommendation -->
+            <div class="border-l-4 border-pink-600 bg-pink-50 p-4 rounded-r-lg">
+                <div class="flex items-start gap-3">
+                    <div class="bg-pink-200 p-2 rounded-full">
+                        <i data-lucide="heart" class="w-5 h-5 text-pink-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Mental Wellness</h4>
+                        <p class="text-sm text-gray-700 mt-1">Practice mindfulness and meditation for 10-15 minutes daily. Connect with friends and family regularly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+
 {% endblock %}
