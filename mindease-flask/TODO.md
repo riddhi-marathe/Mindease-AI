@@ -1,4 +1,4 @@
-# Dashboard Fixes TODO
+Dashboard Fixes TODO
 - [x] Create TODO.md ✅
 - [x] Step 1: Delete standalone mental-wellness-dashboard.html ✅
 - [x] Step 2: Extract CSS from templates/dashboard.html → static/css/dashboard.css ✅
