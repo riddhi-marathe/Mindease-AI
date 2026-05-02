@@ -9,31 +9,31 @@
 }
 
 :root {
-  --sage: #A8D5BA;
-  --cream: #F5F5F0;
-  --earth: #8B7355;
-  --pastel-blue: #A8D8F0;
-  --cool-green: #7ECBA3;
-  --pastel-blue-dark: #6FB8D9;
-  --cool-green-dark: #5BA683;
+  --sage: #D7EAF6;
+  --cream: #F8FBFF;
+  --earth: #0F4C81;
+  --pastel-blue: #D6EAF8;
+  --cool-green: #0F75B2;
+  --pastel-blue-dark: #B8D8F6;
+  --cool-green-dark: #0B5E8E;
   --primary: var(--cool-green);
-  --primary-dark: #5BA683;
-  --secondary: var(--pastel-blue);
-  --accent: var(--earth);
-  --text-primary: #2D4A3A;
-  --text-secondary: #5D7A6A;
+  --primary-dark: #0A4A74;
+  --secondary: #E7F0FB;
+  --accent: #0F4C81;
+  --text-primary: #102A43;
+  --text-secondary: #475569;
   --white: #FFFFFF;
-  --dark-sage: #5A8B76;
-  --dark-cream: #2A2A2A;
-  --dark-earth: #6B5A4A;
-  --dark-text: #E8E8E8;
-  --dark-bg: #1A1A1A;
+  --dark-sage: #102A43;
+  --dark-cream: #E9F4FF;
+  --dark-earth: #0A4A74;
+  --dark-text: #1E293B;
+  --dark-bg: #F8FAFC;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --glass-bg: rgba(255, 255, 255, 0.25);
-  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.45);
 }
 
 html {
@@ -44,7 +44,7 @@ body {
   font-family: 'Inter', sans-serif;
   line-height: 1.7;
   color: var(--text-primary);
-  background: linear-gradient(135deg, #E8F4F8 0%, var(--pastel-blue) 50%, var(--cool-green) 100%), radial-gradient(circle at 20% 80%, rgba(168, 216, 240, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(126, 203, 163, 0.2) 0%, transparent 50%);
+  background: linear-gradient(135deg, #F3FBFF 0%, var(--secondary) 48%, #EAF6FF 100%), radial-gradient(circle at 15% 20%, rgba(15, 117, 178, 0.1) 0%, transparent 45%), radial-gradient(circle at 85% 80%, rgba(15, 75, 129, 0.12) 0%, transparent 35%);
   overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
 }
@@ -157,7 +157,7 @@ h1, h2, h3 {
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, var(--primary), #7C3AED);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -177,6 +177,20 @@ h1, h2, h3 {
   justify-content: center;
 }
 
+.hero-media {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-illustration {
+  width: min(100%, 780px);
+  max-height: 420px;
+  border-radius: 28px;
+  box-shadow: 0 40px 80px rgba(15, 87, 148, 0.15);
+  border: 1px solid rgba(15, 117, 178, 0.12);
+}
+
 .primary-btn {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: white;
@@ -187,7 +201,7 @@ h1, h2, h3 {
   border: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 4px 14px 0 rgb(79 70 229 / 40%);
+  box-shadow: 0 4px 14px 0 rgba(15, 117, 178, 0.28);
 }
 
 .primary-btn:hover {
@@ -515,6 +529,98 @@ h1, h2, h3 {
 h1, h2.section-title, h3 {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
+}
+
+.hospital-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 2rem;
+  align-items: start;
+  margin-top: 2.5rem;
+}
+
+.hospital-cards {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hospital-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(15, 117, 178, 0.12);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 18px 40px rgba(15, 117, 178, 0.06);
+}
+
+.hospital-card-highlight {
+  background: linear-gradient(135deg, rgba(15, 117, 178, 0.12), rgba(236, 248, 255, 0.95));
+  border-color: rgba(15, 117, 178, 0.18);
+}
+
+.hospital-card-tag {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  color: #0f4a74;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.hospital-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hospital-card-meta {
+  color: #475569;
+  line-height: 1.7;
+}
+
+.hospital-map-wrapper {
+  min-height: 420px;
+}
+
+.hospital-map {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  border-radius: 28px;
+  border: 1px solid rgba(15, 117, 178, 0.14);
+  overflow: hidden;
+}
+
+.location-button {
+  margin-top: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.location-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(15, 117, 178, 0.18);
+}
+
+.section-note {
+  color: #475569;
+  margin-top: 0.9rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 960px) {
+  .hospital-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Loading Screen */

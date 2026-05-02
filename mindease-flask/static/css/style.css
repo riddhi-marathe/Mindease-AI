@@ -286,6 +286,18 @@ button:active {
     font-weight: 600;
 }
 
+/* Page Banner */
+.page-banner {
+    background: linear-gradient(135deg, rgba(224, 242, 254, 0.95), rgba(248, 250, 252, 0.95));
+    border-color: #cbd5e1;
+}
+.page-banner h3 {
+    color: #0f172a;
+}
+.page-banner img {
+    max-height: 5rem;
+}
+
 /* Doctor Recommendation Box */
 .doctor-rec {
     background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);

@@ -6,6 +6,7 @@
     <title>MindEase - Your AI Health Companion</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+g2of7njXOe6hMkYrjjk7gG0a2Ix3+Qiu9P4MnQzU=" crossorigin="" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩺</text></svg>">
     <meta name="description" content="MindEase - Premium AI-powered health companion for personalized wellness insights, symptom analysis, and mental health support.">
 </head>
@@ -102,16 +103,12 @@
             <div class="nav-content">
                 <a href="#" class="logo">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <!-- Medical Stethoscope - Healthcare Icon -->
-                        <circle cx="12" cy="8" r="4" fill="none"/>
-                        <path d="M8 8c0 2-1 4-3 5"/>
-                        <path d="M16 8c0 2 1 4 3 5"/>
-                        <path d="M12 12v6"/>
-                        <circle cx="7" cy="6" r="1.2" fill="currentColor"/>
-                        <circle cx="17" cy="6" r="1.2" fill="currentColor"/>
-                        <circle cx="12" cy="18" r="2" fill="none"/>
+                        <path d="M6 4H18C19.1 4 20 4.9 20 6V18C20 19.1 19.1 20 18 20H6C4.9 20 4 19.1 4 18V6C4 4.9 4.9 4 6 4Z"/>
+                        <path d="M12 8V16"/>
+                        <path d="M8 12H16"/>
+                        <path d="M8 4V2H16V4"/>
                     </svg>
-                    MindEase
+                    MindEase Medical
                 </a>
                 <ul class="nav-links">
                     <li><a href="#home">Home</a></li>
@@ -127,11 +124,14 @@
     <section id="home" class="hero">
         <div class="container">
             <div class="hero-content fade-up">
-                <h1>Your AI Health Companion</h1>
-                <p>Premium AI-powered platform delivering personalized health insights, symptom analysis, wellness recommendations, and mental health support. Designed for modern health-tech excellence.</p>
+                <h1>Hospital-grade AI for smarter health decisions</h1>
+                <p>Premium medical AI guidance for symptom assessment, wellness tracking, and mental health support—all backed by a professional healthcare-ready look and feel.</p>
                 <div class="hero-buttons">
                     <button class="primary-btn" onclick="window.location.href='/login'">Get Started Free</button>
                     <button class="secondary-btn" onclick="scrollToSection('features')">Learn More</button>
+                </div>
+                <div class="hero-media">
+                    <img src="{{ url_for('static', filename='images/medical-building.svg') }}" alt="Medical building illustration" class="hero-illustration">
                 </div>
             </div>
         </div>
@@ -321,6 +321,45 @@
         </div>
     </section>
 
+    <!-- Nearby Hospitals -->
+    <section id="hospitals" class="section">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="badge" style="background: rgba(15, 117, 178, 0.12); color: #0f4a74;">Nearby care</span>
+                <h2 class="section-title">Nearby hospital recommendations</h2>
+                <p class="section-description">For non-emergency medical concerns, get nearby hospital and clinic recommendations with a live map view.</p>
+            </div>
+
+            <div class="hospital-grid fade-up">
+                <div class="hospital-cards">
+                    <div class="hospital-card hospital-card-highlight">
+                        <p class="hospital-card-tag">Recommended care for minor medical issues</p>
+                        <h3>Find nearby medical centers quickly</h3>
+                        <p>Use the map to explore clinics, urgent care facilities, and hospital campuses close to you.</p>
+                        <button class="location-button" id="locationButton">Use my location</button>
+                        <p class="section-note">Allow location access to center the map on your area.</p>
+                    </div>
+                    <div class="hospital-card">
+                        <p class="hospital-card-title">CityCare Medical Center</p>
+                        <p class="hospital-card-meta">Open 24/7 · Family medicine, urgent care</p>
+                    </div>
+                    <div class="hospital-card">
+                        <p class="hospital-card-title">Greenfield Community Hospital</p>
+                        <p class="hospital-card-meta">Emergency services · Outpatient care</p>
+                    </div>
+                    <div class="hospital-card">
+                        <p class="hospital-card-title">Northside Clinic</p>
+                        <p class="hospital-card-meta">Walk-in appointments · Pharmacy on site</p>
+                    </div>
+                </div>
+
+                <div class="hospital-map-wrapper">
+                    <div id="hospitalMap" class="hospital-map"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -363,6 +402,7 @@
         </div>
     </footer>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o0AucevYPCpCk1YpYkY7SWF7SfF2tHZG4w4VGR/H3h0=" crossorigin=""></script>
     <script>
         // Enhanced loading screen with medical animations
         setTimeout(() => {
@@ -485,6 +525,73 @@
             `;
             document.head.appendChild(style);
         }
+
+        // Nearby hospital map integration
+        function initHospitalMap() {
+            const defaultCenter = [37.7749, -122.4194];
+            const hospitalMap = L.map('hospitalMap', {
+                center: defaultCenter,
+                zoom: 12,
+                zoomControl: true,
+                scrollWheelZoom: false,
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(hospitalMap);
+
+            const hospitals = [
+                {
+                    name: 'CityCare Medical Center',
+                    description: 'Open 24/7 · Family medicine, urgent care',
+                    coords: [37.7796, -122.4184],
+                },
+                {
+                    name: 'Greenfield Community Hospital',
+                    description: 'Emergency services available · In-network care',
+                    coords: [37.7649, -122.4269],
+                },
+                {
+                    name: 'Northside Clinic',
+                    description: 'Walk-in appointments · Pharmacy on site',
+                    coords: [37.7891, -122.4013],
+                },
+            ];
+
+            hospitals.forEach(({ name, description, coords }) => {
+                L.marker(coords).addTo(hospitalMap).bindPopup(`<strong>${name}</strong><br>${description}`);
+            });
+
+            document.getElementById('locationButton').addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    alert('Location access is not available in your browser.');
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLon = position.coords.longitude;
+                        hospitalMap.setView([userLat, userLon], 13);
+                        L.circle([userLat, userLon], {
+                            color: '#0f75b2',
+                            fillColor: '#0f75b2',
+                            fillOpacity: 0.1,
+                            radius: 600,
+                        }).addTo(hospitalMap).bindPopup('Your current location').openPopup();
+                    },
+                    () => {
+                        alert('Unable to access your location. Please check browser permissions.');
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            });
+        }
+
+        window.addEventListener('load', () => {
+            initLogoAnimation();
+            animateActivityIndicator();
+            initHospitalMap();
+        });
     </script>
 </body>
 </html>
