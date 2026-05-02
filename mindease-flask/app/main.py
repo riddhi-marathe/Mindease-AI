@@ -285,6 +285,54 @@ def _build_focus_items(assessments, logs, metrics, avg_sleep, avg_stress, weekly
     return focus_items[:3]
 
 
+def _get_critical_assessments(assessments):
+    """Extract critical and high-urgency assessments"""
+    critical = []
+    for assessment in assessments:
+        urgency = assessment.urgency_level or "routine"
+        if urgency.lower() in ["critical", "emergency", "high"]:
+            critical.append(assessment)
+    return critical
+
+
+def _get_hospital_recommendations():
+    """Get a list of recommended nearby hospitals
+    Returns sample hospitals - in production, would use user location and real API
+    """
+    return [
+        {
+            "name": "Emergency Care Center",
+            "address": "123 Medical Plaza, Healthcare District",
+            "distance": "0.8 km",
+            "phone": "(555) 123-4567",
+            "rating": 4.8,
+            "services": ["Emergency", "Mental Health Crisis", "24/7 Support"],
+            "lat": 40.7128,
+            "lng": -74.0060,
+        },
+        {
+            "name": "Wellness Crisis Unit",
+            "address": "456 Health Ave, Downtown",
+            "distance": "1.2 km", 
+            "phone": "(555) 234-5678",
+            "rating": 4.6,
+            "services": ["Mental Health", "Crisis Intervention", "Counseling"],
+            "lat": 40.7138,
+            "lng": -74.0050,
+        },
+        {
+            "name": "Community Mental Health Hospital",
+            "address": "789 Care Road, Central",
+            "distance": "1.5 km",
+            "phone": "(555) 345-6789",
+            "rating": 4.7,
+            "services": ["Psychiatric Care", "Emergency Services", "Support Groups"],
+            "lat": 40.7118,
+            "lng": -74.0070,
+        },
+    ]
+
+
 def _build_dashboard_context(user):
     guest_series = _weekly_energy_series([])
     if not user:
@@ -331,6 +379,10 @@ def _build_dashboard_context(user):
         .order_by(HealthMetric.recorded_at.desc())
         .all()
     )
+
+    # Check for critical assessments
+    critical_assessments = _get_critical_assessments(assessments)
+    has_critical_issue = len(critical_assessments) > 0
 
     weekly_cutoff = date.today() - timedelta(days=6)
     weekly_logs = [log for log in logs if log.log_date and log.log_date >= weekly_cutoff]
@@ -416,6 +468,17 @@ def _build_dashboard_context(user):
             assessments, logs, metrics, avg_sleep, avg_stress, weekly_checkins
         ),
         "highlights": highlights,
+        "has_critical_issue": has_critical_issue,
+        "critical_assessments": [
+            {
+                "title": ASSESSMENT_TITLES.get(a.assessment_type, "Assessment"),
+                "urgency": (a.urgency_level or "routine").replace("_", " ").title(),
+                "severity_score": a.severity_score or 0,
+                "created_label": _relative_date(a.created_at),
+            }
+            for a in critical_assessments[:3]
+        ],
+        "hospital_recommendations": _get_hospital_recommendations(),
     }
 
 
